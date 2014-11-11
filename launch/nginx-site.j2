@@ -3,13 +3,8 @@ upstream djangoapp_server {
 }
  
 server {
-    #EC2 instance security group must be configured to accept http connections over Port 80
     listen 80;
-    server_name default;
- 
-    access_log  /var/log/nginx/nginx-access.log;
-    error_log  /var/log/nginx/nginx-error.log info;
- 
+    
     keepalive_timeout 5;
  
     # Directories to serve

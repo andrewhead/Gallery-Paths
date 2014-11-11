@@ -7,6 +7,8 @@
   - venv: "{{ projectdir }}/venv"
   - src: "{{ projectdir }}/src"
   - djdir: "{{ src }}/server"
+  - appname: "gallery"
+  - scriptdir: "{{ projectdir }}/scripts"
   tasks:
   - name: Install server software
     apt: name={{ item }} update_cache=yes
@@ -26,6 +28,9 @@
     file: state=directory path={{ projectdir }} owner=ubuntu
     sudo: true
  
+  - name: Create scripts directory
+    file: state=directory path={{ scriptdir }} owner=ubuntu
+
   - name: Install virtualenv
     pip: name=virtualenv
     sudo: true
@@ -39,7 +44,11 @@
     - django-tastypie
 
   - name: Configure nginx sites
-    template: src=nginx-sites.j2 dest=/etc/nginx/sites-enabled/default
+    template: src=nginx-site.j2 dest=/etc/nginx/sites-enabled/default
+    sudo: true
+
+  - name: Remove default nginx user
+    lineinfile: dest=/etc/nginx/nginx.conf line="user www-data;" state=absent
     sudo: true
 
   - name: Add nginx user
@@ -58,3 +67,12 @@
 
   - name: Checkout source code
     git: repo=https://github.com/andrewhead/Gallery-Paths.git dest={{ src }}
+
+  - name: Copy startup script
+    template: src=startserver.j2 dest={{ scriptdir }}/startserver.sh
+  
+  - name: Start server
+    command: /bin/bash {{ scriptdir }}/startserver.sh
+
+  - name: Restart nginx
+    service: name=nginx state=restarted

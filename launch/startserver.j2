@@ -1,3 +1,4 @@
 #!/bin/bash
 source {{ venv }}/bin/activate
-gunicorn {{ djdir }}.wsgi
+killall gunicorn
+cd {{ djdir }} && gunicorn {{ appname }}.wsgi &
