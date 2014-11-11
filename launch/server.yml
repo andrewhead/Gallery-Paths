@@ -9,6 +9,7 @@
   - djdir: "{{ src }}/server"
   - appname: "gallery"
   - scriptdir: "{{ projectdir }}/scripts"
+  - djsettings: "{{ appname }}.settings.production"
   tasks:
   - name: Install server software
     apt: name={{ item }} update_cache=yes
@@ -69,7 +70,11 @@
     git: repo=https://github.com/andrewhead/Gallery-Paths.git dest={{ src }}
 
   - name: Sync DB with Django models
-    django_manage: command={{ item }} app_path={{ djdir }} virtualenv={{ venv }}
+    django_manage: >
+      command={{ item }}
+      app_path={{ djdir }}
+      virtualenv={{ venv }}
+      settings={{ djsettings }}
     with_items:
     - syncdb
     - migrate
