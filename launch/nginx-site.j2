@@ -9,7 +9,7 @@ server {
  
     # Directories to serve
     location /static/ {
-        alias {{ src }}/static/;
+        alias {{ projectdir }}/static/;
     }
  
     # Redirect the rest to your django app server

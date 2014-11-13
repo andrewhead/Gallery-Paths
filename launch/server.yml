@@ -6,6 +6,7 @@
   - projectdir: /usr/local/gallery
   - venv: "{{ projectdir }}/venv"
   - src: "{{ projectdir }}/src"
+  - staticdir: "{{ projectdir }}/static"
   - djdir: "{{ src }}/server"
   - appname: "gallery"
   - scriptdir: "{{ projectdir }}/scripts"
@@ -31,6 +32,9 @@
  
   - name: Create scripts directory
     file: state=directory path={{ scriptdir }} owner=ubuntu
+
+  - name: Create static files directory
+    file: state=directory path={{ staticdir }} owner=ubuntu
 
   - name: Install virtualenv
     pip: name=virtualenv
@@ -78,6 +82,7 @@
     with_items:
     - syncdb
     - migrate
+    - collectstatic
 
   - name: Copy startup script
     template: src=startserver.j2 dest={{ scriptdir }}/startserver.sh  
