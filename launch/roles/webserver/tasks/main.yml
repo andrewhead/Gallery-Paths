@@ -1,0 +1,81 @@
+---
+- name: Install server software
+  apt: name={{ item }} update_cache=yes
+  with_items:
+  - git
+  - python-pip
+  - nginx
+  - mysql-server-5.6
+  - mysql-client-core-5.6
+  - python-boto
+  - libmysqlclient-dev
+  - python-dev
+  - python-mysqldb
+  sudo: true
+
+- name: Create project directory
+  file: state=directory path={{ projectdir }} owner=ubuntu
+  sudo: true
+
+- name: Create scripts directory
+  file: state=directory path={{ scriptdir }} owner=ubuntu
+
+- name: Create static files directory
+  file: state=directory path={{ staticdir }} owner=ubuntu
+
+- name: Install virtualenv
+  pip: name=virtualenv
+  sudo: true
+
+- name: Install server Python dependencies
+  pip: name={{ item }} virtualenv="{{ venv }}"
+  with_items:
+  - gunicorn
+  - mysql-python
+  - django
+  - django-tastypie
+
+- name: Configure nginx sites
+  template: src=nginx-site.j2 dest=/etc/nginx/sites-enabled/default
+  sudo: true
+
+- name: Remove default nginx user
+  lineinfile: dest=/etc/nginx/nginx.conf line="user www-data;" state=absent
+  sudo: true
+
+- name: Add nginx user
+  lineinfile: dest=/etc/nginx/nginx.conf line="user ubuntu ubuntu;"
+  sudo: true
+
+- name: Configure MySQL
+  s3: bucket=gallerypaths object=my.cnf dest=/etc/my.cnf mode=get
+  sudo: true
+
+- name: Start MySQL service
+  action: service name=mysql state=started
+
+- name: Create MySQL database for project
+  mysql_db: name=gallery state=present
+
+- name: Checkout source code
+  git: repo=https://github.com/andrewhead/Gallery-Paths.git dest={{ src }}
+
+- name: Sync DB with Django models
+  django_manage: >
+    command={{ item }}
+    app_path={{ djdir }}
+    virtualenv={{ venv }}
+    settings={{ djsettings }}
+  with_items:
+  - syncdb
+  - migrate
+  - collectstatic
+
+- name: Copy startup script
+  template: src=startserver.j2 dest={{ scriptdir }}/startserver.sh  
+
+- name: Start server
+  command: /bin/bash {{ scriptdir }}/startserver.sh
+
+- name: Restart nginx
+  service: name=nginx state=restarted

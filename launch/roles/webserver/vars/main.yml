@@ -1,0 +1,8 @@
+projectdir: /usr/local/gallery
+venv: "{{ projectdir }}/venv"
+src: "{{ projectdir }}/src"
+staticdir: "{{ projectdir }}/static"
+djdir: "{{ src }}/server"
+appname: "gallery"
+scriptdir: "{{ projectdir }}/scripts"
+djsettings: "{{ appname }}.settings.production"

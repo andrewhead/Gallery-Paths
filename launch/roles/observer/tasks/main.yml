@@ -1,0 +1,34 @@
+---
+- name: Make directories
+  file: state=directory dest={{ item }} owner={{ ansible_ssh_user }}
+  with_items:
+  - "{{ jardir }}"
+  - "{{ src }}"
+  - "{{ venv }}"
+  sudo: true
+
+- name: Fetch JARs
+  get_url: url={{ item }} dest={{ jardir }}
+  with_items:
+  - http://repo1.maven.org/maven2/com/google/zxing/core/3.1.0/core-3.1.0.jar
+  - http://repo1.maven.org/maven2/com/google/zxing/javase/3.1.0/javase-3.1.0.jar
+
+- name: Install developer packages
+  apt: name=python-pip
+  sudo: true
+  tags:
+  - dev
+
+- name: Install virtualenv
+  pip: name=virtualenv
+  sudo: true
+  tags:
+  - dev
+
+- name: Fetch developer Python packages
+  pip: name=requests virtualenv="{{ venv }}"
+  tags:
+  - dev
+
+- name: Fetch source
+  git: repo=https://github.com/andrewhead/Gallery-Paths.git dest={{ src }}

@@ -1,0 +1,6 @@
+---
+projectdir: /usr/local/gallery
+jardir: "{{ projectdir }}/jar"
+src: "{{ projectdir }}/src"
+classpath: "{{ jardir }}/core-3.1.0.jar:{{ jardir }}/javase-3.1.0.jar:."
+venv: "{{ projectdir }}/venv"

@@ -1,0 +1,17 @@
+<html>
+    <head>
+        {% load staticfiles %}
+        <title>Visitor Pathways</title>
+        <link rel="stylesheet" href="https://code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css">
+        <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+        <script type="text/javascript" src="https://code.jquery.com/ui/1.11.1/jquery-ui.min.js"></script>
+        <script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
+        <script type="text/javascript" src="{% static "gallery/js/paths.js" %}"></script>
+    </head>
+    <body>
+        <p>Hello from pathways.</p>
+        <img src="{% static "gallery/img/visitor.png" %}" alt="Visitor"/>
+        <div id="map"></div>
+        <div id="time_range"></div>
+    </body>
+</html>

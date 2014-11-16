@@ -1,0 +1,6 @@
+---
+- hosts: observers
+  gather_facts: false
+  user: pi
+  roles:
+  - observer

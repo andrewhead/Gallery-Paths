@@ -12,6 +12,7 @@ sightingResource = SightingResource()
 urlpatterns = patterns('',
     url(r'^api/', include(sightingResource.urls)),
     url(r'^admin/', include(admin.site.urls)),
-    url(r'home^$', views.home),
+    url(r'^home$', views.home),
+    url(r'^paths$', views.paths),
     url(r'^$', views.home),
 )
