@@ -27,28 +27,35 @@ import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 public class QrReader {
 
 	public static void main(String[] args) throws IOException, NotFoundException {
-		String filePath = args[0];
+        /**
+         *  @param args list of filenames to process
+         */
 		Map<EncodeHintType, ErrorCorrectionLevel> hintMap = new HashMap<EncodeHintType, ErrorCorrectionLevel>();
 		hintMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);
-        Result qrCode = readQRCode(filePath, "UTF-8", hintMap);
 
-        /* Start by printing out date */
-        TimeZone timezone = TimeZone.getTimeZone("UTC");
-        DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-        format.setTimeZone(timezone);
-        System.out.print(format.format(new Date()) + ",");
+        for (int i = 0; i < args.length; i++) {
+            /* Compute the value of the QR code */
+            String filePath = args[0];
+            Result qrCode = readQRCode(filePath, "UTF-8", hintMap);
 
-        /* Print out QRCode detection information */
-		ResultPoint[] qrPoints = qrCode.getResultPoints();
-		System.out.print(qrCode.getText() + ",");
-		for (int i = 0; i < qrPoints.length; i++) {
-		    System.out.print(qrPoints[i].getX() + "," + qrPoints[i].getY() + ",");
-		}
-        System.out.println();
+            /* Start by printing out date, which should be encoded in the file's basename */
+            String basename = new File(filePath).getName().split("\\.")[0];
+            System.out.print(basename + ",");
+
+            /* Print out QRCode detection information */
+            ResultPoint[] qrPoints = qrCode.getResultPoints();
+            System.out.print(qrCode.getText() + ",");
+            for (int j = 0; j < qrPoints.length; j++) {
+                System.out.print(qrPoints[j].getX() + "," + qrPoints[j].getY() + ",");
+            }
+            System.out.println();
+        }
 	}
 
 	public static Result readQRCode(String filename, String charset, Map hintMap)
-        /* Read QR code from image file */
+        /**
+         *  Read QR code from image file.
+         */
         throws FileNotFoundException, IOException, NotFoundException {
 		BinaryBitmap binaryBitmap = new BinaryBitmap(new HybridBinarizer(
 				new BufferedImageLuminanceSource(ImageIO.read(new FileInputStream(filename)))));
