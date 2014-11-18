@@ -5,6 +5,7 @@
   - "{{ jardir }}"
   - "{{ src }}"
   - "{{ venv }}"
+  - "{{ datadir }}"
   sudo: true
 
 - name: Fetch JARs
@@ -32,3 +33,12 @@
 
 - name: Fetch source
   git: repo=https://github.com/andrewhead/Gallery-Paths.git dest={{ src }}
+
+- name: Copy over default observer configuration
+  copy: src=observer.conf dest=/etc/observer.conf
+  sudo: true
+
+- name: Compile java source
+  command: "javac -cp {{ classpath }} QrReader.java chdir={{ src }}/observer"
+  tags:
+  - compile
