@@ -2,8 +2,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TimeZone;
 import javax.imageio.ImageIO;
 import com.google.zxing.BinaryBitmap;
 import com.google.zxing.EncodeHintType;
@@ -26,19 +30,29 @@ public class QrReader {
 		String filePath = args[0];
 		Map<EncodeHintType, ErrorCorrectionLevel> hintMap = new HashMap<EncodeHintType, ErrorCorrectionLevel>();
 		hintMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);
-        readQRCode(filePath, "UTF-8", hintMap);
-	}
+        Result qrCode = readQRCode(filePath, "UTF-8", hintMap);
 
-	public static void readQRCode(String filename, String charset, Map hintMap)
-        throws FileNotFoundException, IOException, NotFoundException {
-		BinaryBitmap binaryBitmap = new BinaryBitmap(new HybridBinarizer(
-				new BufferedImageLuminanceSource(ImageIO.read(new FileInputStream(filename)))));
-		Result qrCode = new MultiFormatReader().decode(binaryBitmap, hintMap);
+        /* Start by printing out date */
+        TimeZone timezone = TimeZone.getTimeZone("UTC");
+        DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        format.setTimeZone(timezone);
+        System.out.print(format.format(new Date()) + ",");
+
+        /* Print out QRCode detection information */
 		ResultPoint[] qrPoints = qrCode.getResultPoints();
 		System.out.print(qrCode.getText() + ",");
 		for (int i = 0; i < qrPoints.length; i++) {
 		    System.out.print(qrPoints[i].getX() + "," + qrPoints[i].getY() + ",");
 		}
         System.out.println();
+	}
+
+	public static Result readQRCode(String filename, String charset, Map hintMap)
+        /* Read QR code from image file */
+        throws FileNotFoundException, IOException, NotFoundException {
+		BinaryBitmap binaryBitmap = new BinaryBitmap(new HybridBinarizer(
+				new BufferedImageLuminanceSource(ImageIO.read(new FileInputStream(filename)))));
+		Result qrCode = new MultiFormatReader().decode(binaryBitmap, hintMap);
+        return qrCode;
 	}
 }
