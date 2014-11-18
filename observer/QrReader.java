@@ -34,21 +34,29 @@ public class QrReader {
 		hintMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);
 
         for (int i = 0; i < args.length; i++) {
+
             /* Compute the value of the QR code */
             String filePath = args[0];
-            Result qrCode = readQRCode(filePath, "UTF-8", hintMap);
-
-            /* Start by printing out date, which should be encoded in the file's basename */
-            String basename = new File(filePath).getName().split("\\.")[0];
-            System.out.print(basename + ",");
-
-            /* Print out QRCode detection information */
-            ResultPoint[] qrPoints = qrCode.getResultPoints();
-            System.out.print(qrCode.getText() + ",");
-            for (int j = 0; j < qrPoints.length; j++) {
-                System.out.print(qrPoints[j].getX() + "," + qrPoints[j].getY() + ",");
+            Result qrCode = null;
+            try {
+                qrCode = readQRCode(filePath, "UTF-8", hintMap);
+            } catch (NotFoundException nfe) {
+                continue;
             }
-            System.out.println();
+
+            if (qrCode != null) {
+                /* Start by printing out date, which should be encoded in the file's basename */
+                String basename = new File(filePath).getName().split("\\.")[0];
+                System.out.print(basename + ",");
+
+                /* Print out QRCode detection information */
+                ResultPoint[] qrPoints = qrCode.getResultPoints();
+                System.out.print(qrCode.getText() + ",");
+                for (int j = 0; j < qrPoints.length; j++) {
+                    System.out.print(qrPoints[j].getX() + "," + qrPoints[j].getY() + ",");
+                }
+                System.out.println();
+            }
         }
 	}
 
