@@ -35,9 +35,10 @@ public class QrReader {
 				new BufferedImageLuminanceSource(ImageIO.read(new FileInputStream(filename)))));
 		Result qrCode = new MultiFormatReader().decode(binaryBitmap, hintMap);
 		ResultPoint[] qrPoints = qrCode.getResultPoints();
-		System.out.println(qrCode.getText());
+		System.out.print(qrCode.getText() + ",");
 		for (int i = 0; i < qrPoints.length; i++) {
-		    System.out.println(qrPoints[i]);
+		    System.out.print(qrPoints[i].getX() + "," + qrPoints[i].getY() + ",");
 		}
+        System.out.println();
 	}
 }
