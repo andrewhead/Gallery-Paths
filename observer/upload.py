@@ -42,5 +42,5 @@ if __name__ == '__main__':
     parser.add_argument('det_file', help="Text file with all detected events")
     parser.add_argument('-c', help="Observer configuration file", default="/etc/observer.conf")
     args = parser.parse_args()
-    client_id, location_id = readConfig(args.c)
-    uploadDetections(args.det_file)
+    clientId, locationId = readConfig(args.c)
+    uploadDetections(args.det_file, locationId, clientId)
