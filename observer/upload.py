@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 import argparse
 import ConfigParser
 import requests
+import json
 
 
 API_URL='http://gallerypaths.com/api/sighting/'
