@@ -26,8 +26,7 @@ def uploadDetections(detectionFilename, locationId, clientId):
             'x3': float(data[6]),
             'y3': float(data[7]),
         }
-        print detection
-        # requests.post(API_URL, data=json.dumps(detection), headers={'Content-Type': 'application/json'})
+        requests.post(API_URL, data=json.dumps(detection), headers={'Content-Type': 'application/json'})
 
 
 def readConfig(configFilename):

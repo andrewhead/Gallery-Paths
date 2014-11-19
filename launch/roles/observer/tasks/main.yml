@@ -33,6 +33,8 @@
 
 - name: Fetch source
   git: repo=https://github.com/andrewhead/Gallery-Paths.git dest={{ src }}
+  tags:
+  - code
 
 - name: Copy over default observer configuration
   copy: src=observer.conf dest=/etc/observer.conf
