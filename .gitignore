@@ -55,3 +55,6 @@ target/
 
 # Static files
 server/static
+
+# Additional unwantables
+.DS_Store

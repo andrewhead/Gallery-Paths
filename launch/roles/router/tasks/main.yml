@@ -1,0 +1,66 @@
+---
+- name: Update apt cache and upgrade
+  apt: upgrade=yes update_cache=yes
+  sudo: true
+
+- name: Install network packages
+  apt: name={{ item }}
+  with_items:
+  - rfkill
+  - zd1211-firmware
+  - hostapd
+  - hostap-utils
+  - iw
+  - dnsmasq
+  - bridge-utils
+  sudo: true
+
+- name: Copy network interface configuration
+  copy: src=interfaces dest=/etc/network/interfaces
+  sudo: true
+  tags:
+  - config
+
+- name: Restart network interfaces
+  command: ifdown wlan0; ifup wlan0
+  sudo: true
+  tags:
+  - config
+
+- name: Copy hostapd.conf
+  copy: src=hostapd.conf dest=/etc/hostapd/hostapd.conf
+  sudo: true
+  tags:
+  - config
+
+- name: Copy hostapd default configurastion
+  copy: src=hostapd dest=/etc/default/hostapd
+  sudo: true
+  tags:
+  - config
+
+- name: Fetch new hostapd binary
+  get_url: url=http://dl.dropbox.com/u/1663660/hostapd/hostapd dest=/usr/sbin/ mode=0755
+  sudo: true
+  tags:
+  - config
+
+- name: Configure dnsmasq
+  lineinfile: dest=/etc/dnsmasq.conf line={{ item }}
+  with_items:
+  - "domain-needed"
+  - "interface=wlan0"
+  - "dhcp-range=192.168.2.1,192.168.2.254,12h"
+  sudo: true
+  tags:
+  - config
+
+- name: Restart network services
+  service: name={{ item }} state=restarted
+  with_items:
+  - hostapd
+  - dnsmasq
+  - networking
+  sudo: true
+  tags:
+  - config
