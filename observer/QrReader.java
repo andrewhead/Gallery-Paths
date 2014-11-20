@@ -11,7 +11,7 @@ import java.util.TimeZone;
 import javax.imageio.ImageIO;
 import com.google.zxing.BinaryBitmap;
 import com.google.zxing.EncodeHintType;
-import com.google.zxing.MultiFormatReader;
+import com.google.zxing.multi.qrcode.QRCodeMultiReader;
 import com.google.zxing.NotFoundException;
 import com.google.zxing.Result;
 import com.google.zxing.ResultPoint;
@@ -37,37 +37,41 @@ public class QrReader {
 
             /* Compute the value of the QR code */
             String filePath = args[0];
-            Result qrCode = null;
+            Result[] qrCodes = null;
             try {
-                qrCode = readQRCode(filePath, "UTF-8", hintMap);
+                qrCodes = readQRCodes(filePath, "UTF-8", hintMap);
             } catch (NotFoundException nfe) {
                 continue;
             }
 
-            if (qrCode != null) {
-                /* Start by printing out date, which should be encoded in the file's basename */
-                String basename = new File(filePath).getName().split("\\.")[0];
-                System.out.print(basename + ",");
+            if (qrCodes != null) {
+                for (int j = 0; j < qrCodes.length; j++) {
 
-                /* Print out QRCode detection information */
-                ResultPoint[] qrPoints = qrCode.getResultPoints();
-                System.out.print(qrCode.getText() + ",");
-                for (int j = 0; j < qrPoints.length; j++) {
-                    System.out.print(qrPoints[j].getX() + "," + qrPoints[j].getY() + ",");
+                    /* Start by printing out date, which should be encoded in the file's basename */
+                    Result qrCode = qrCodes[j];
+                    String basename = new File(filePath).getName().split("\\.")[0];
+                    System.out.print(basename + ",");
+
+                    /* Print out QRCode detection information */
+                    ResultPoint[] qrPoints = qrCode.getResultPoints();
+                    System.out.print(qrCode.getText() + ",");
+                    for (int k = 0; k < qrPoints.length; k++) {
+                        System.out.print(qrPoints[k].getX() + "," + qrPoints[k].getY() + ",");
+                    }
+                    System.out.println();
                 }
-                System.out.println();
             }
         }
 	}
 
-	public static Result readQRCode(String filename, String charset, Map hintMap)
+	public static Result[] readQRCodes(String filename, String charset, Map hintMap)
         /**
-         *  Read QR code from image file.
+         *  Read QR codes from image file.
          */
         throws FileNotFoundException, IOException, NotFoundException {
 		BinaryBitmap binaryBitmap = new BinaryBitmap(new HybridBinarizer(
 				new BufferedImageLuminanceSource(ImageIO.read(new FileInputStream(filename)))));
-		Result qrCode = new MultiFormatReader().decode(binaryBitmap, hintMap);
-        return qrCode;
+		Result[] qrCodes = new QRCodeMultiReader().decodeMultiple(binaryBitmap, hintMap);
+        return qrCodes;
 	}
 }
