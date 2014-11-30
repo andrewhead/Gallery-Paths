@@ -1,0 +1,11 @@
+auto lo
+
+iface lo inet loopback
+
+auto wlan0
+iface wlan0 inet dhcp
+	wireless mode managed
+	wireless essid any
+	wpa-driver wext
+	wpa-conf /etc/wpa_supplicant/wpa_supplicant.conf
+allow-hotplug wlan0
