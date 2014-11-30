@@ -1,6 +1,9 @@
 #! /bin/bash
-SERVER_URL = "www.gallerypaths.com"
-LOG_FILE = /var/log/gallery/network
+# Reboot network interfaces on this board if network is down.
+# Run with sudo permissions.
+
+SERVER_URL="www.gallerypaths.com"
+LOG_FILE=/var/log/gallery/network
 
 curl $SERVER_URL
 if [ $? -ne 0 ]

@@ -44,15 +44,17 @@
   copy: src=wpa_supplicant.conf dest=/etc/wpa_supplicant/wpa_supplicant.conf backup=yes
   sudo: true
 
-- name: Compile java source
+- name: Compile QR reader
   command: g++ -lzbar -lpng read_qr.cpp -o read_qr
   args:
     chdir: "{{ src }}/observer"
 
 - name: Schedule network check
-  cron: name="network reboot" minute="*/10" job="{{ src }}/network_reboot.sh" user="root"
+  cron: name="network reboot" minute="*/10" job="{{ src }}/observer/network_reboot.sh" user="root"
   sudo: true
 
-- name: Restart wireless
-  command: ifdown wlan0; ifup wlan0
+- name: Enable camera
+  lineinfile: dest=/boot/config.txt line="start_x=1"
   sudo: true
+
+- debug: Your Observer is ready. Reboot the board.
