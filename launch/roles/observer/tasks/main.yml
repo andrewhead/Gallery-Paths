@@ -6,41 +6,53 @@
   - "{{ src }}"
   - "{{ venv }}"
   - "{{ datadir }}"
+  - /var/log/gallery/
   sudo: true
 
-- name: Fetch JARs
-  get_url: url={{ item }} dest={{ jardir }}
+- name: Install Build dependencies
+  apt: name={{ item }}
   with_items:
-  - http://repo1.maven.org/maven2/com/google/zxing/core/3.1.0/core-3.1.0.jar
-  - http://repo1.maven.org/maven2/com/google/zxing/javase/3.1.0/javase-3.1.0.jar
-
-- name: Install developer packages
-  apt: name=python-pip
+  - build-essential
+  - g++
+  - libzbar0
+  - zbar-tools
+  - libzbar-dev
+  - python-pip
   sudo: true
-  tags:
-  - dev
 
 - name: Install virtualenv
   pip: name=virtualenv
   sudo: true
-  tags:
-  - dev
 
-- name: Fetch developer Python packages
+- name: Fetch Python packages
   pip: name=requests virtualenv="{{ venv }}"
-  tags:
-  - dev
 
 - name: Fetch source
   git: repo=https://github.com/andrewhead/Gallery-Paths.git dest={{ src }}
   tags:
   - code
 
-- name: Copy over default observer configuration
+- name: Copy default observer configuration
   copy: src=observer.conf dest=/etc/observer.conf
   sudo: true
 
+- name: Copy wireless configuration
+  copy: src=interfaces dest=/etc/network/interfaces backup=yes
+  sudo: true
+
+- name: Copy wpa_supplicant
+  copy: src=wpa_supplicant.conf dest=/etc/wpa_supplicant/wpa_supplicant.conf backup=yes
+  sudo: true
+
 - name: Compile java source
-  command: "javac -cp {{ classpath }} QrReader.java chdir={{ src }}/observer"
-  tags:
-  - compile
+  command: g++ -lzbar -lpng read_qr.cpp -o read_qr
+  args:
+    chdir: "{{ src }}/observer"
+
+- name: Schedule network check
+  cron: name="network reboot" minute="*/10" job="{{ src }}/network_reboot.sh" user="root"
+  sudo: true
+
+- name: Restart wireless
+  command: ifdown wlan0; ifup wlan0
+  sudo: true
