@@ -11,9 +11,10 @@ import json
 API_URL='http://gallerypaths.com/api/sighting/'
 
 
-def uploadDetections(detectionFilename, locationId, clientId):
+def uploadDetections(lines, locationId, clientId):
     ''' Read detections from file and upload to server. '''
-    for line in open(detectionFilename).readlines():
+    for line in lines:
+        print "Uploading"
         data = line.split(',')
         detection = {
             'time': data[0],
@@ -27,7 +28,10 @@ def uploadDetections(detectionFilename, locationId, clientId):
             'x3': float(data[6]),
             'y3': float(data[7]),
         }
-        requests.post(API_URL, data=json.dumps(detection), headers={'Content-Type': 'application/json'})
+        try:
+            requests.post(API_URL, data=json.dumps(detection), headers={'Content-Type': 'application/json'})
+        except:
+            print "Error posting detection to URL"
 
 
 def readConfig(configFilename):
@@ -42,5 +46,21 @@ if __name__ == '__main__':
     parser.add_argument('det_file', help="Text file with all detected events")
     parser.add_argument('-c', help="Observer configuration file", default="/etc/observer.conf")
     args = parser.parse_args()
+
+    ''' Fetch observer configuration. '''
     clientId, locationId = readConfig(args.c)
-    uploadDetections(args.det_file, locationId, clientId)
+
+    ''' Upload lines of file to server. '''
+    with open(args.det_file, 'r') as file_:
+        lines = file_.readlines()
+        lineCount = len(lines)
+        uploadDetections(lines, locationId, clientId)
+
+    ''' Delete all processed lines. 
+        Leave all new lines added during execution. '''
+    with open(args.det_file, 'r+') as file_:
+        currentLines = file_.readlines()
+        file_.seek(0)
+        file_.truncate()
+        if len(currentLines) > lineCount:
+            file_.writelines(currentLines[lineCount:])
