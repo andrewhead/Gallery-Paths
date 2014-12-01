@@ -6,15 +6,25 @@ import argparse
 import ConfigParser
 import requests
 import json
+import subprocess
+import os
 
 
-API_URL='http://gallerypaths.com/api/sighting/'
+TEST_URL = 'http://gallerypaths.com'
+API_URL = 'http://gallerypaths.com/api/sighting/'
 
 
 def uploadDetections(lines, locationId, clientId):
+
+    ''' Check to see we can contact server. '''
+    with open(os.devnull, 'wb') as devnull:
+        res = subprocess.call("curl " + TEST_URL, shell=True, 
+            stdout=devnull, stderr=subprocess.STDOUT)
+        if res != 0:
+            raise SystemExit("Cannot contact the server.  Exiting.")
+
     ''' Read detections from file and upload to server. '''
     for line in lines:
-        print "Uploading"
         data = line.split(',')
         detection = {
             'time': data[0],
@@ -29,9 +39,10 @@ def uploadDetections(lines, locationId, clientId):
             'y3': float(data[7]),
         }
         try:
-            requests.post(API_URL, data=json.dumps(detection), headers={'Content-Type': 'application/json'})
+            requests.post(API_URL, data=json.dumps(detection), 
+                headers={'Content-Type': 'application/json'})
         except:
-            print "Error posting detection to URL"
+            print "Could not upload request: " + json.dumps(detection)
 
 
 def readConfig(configFilename):

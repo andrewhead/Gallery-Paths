@@ -4,7 +4,6 @@
   with_items:
   - "{{ jardir }}"
   - "{{ src }}"
-  - "{{ venv }}"
   - "{{ datadir }}"
   - /var/log/gallery/
   sudo: true
@@ -20,12 +19,9 @@
   - python-pip
   sudo: true
 
-- name: Install virtualenv
-  pip: name=virtualenv
+- name: Install Python dependencies
+  pip: name=requests
   sudo: true
-
-- name: Fetch Python packages
-  pip: name=requests virtualenv="{{ venv }}"
 
 - name: Fetch source
   git: repo=https://github.com/andrewhead/Gallery-Paths.git dest={{ src }}
@@ -49,12 +45,18 @@
   args:
     chdir: "{{ src }}/observer"
 
-- name: Schedule network check
-  cron: name="network reboot" minute="*/10" job="{{ src }}/observer/network_reboot.sh" user="root"
-  sudo: true
-
 - name: Enable camera
   lineinfile: dest=/boot/config.txt line="start_x=1"
   sudo: true
+
+- name: Schedule network check
+  cron: name="network reboot" minute="*/10" job="{{ src }}/observer/./network_reboot.sh" user="root"
+  sudo: true
+
+- name: Schedule snapshot procedure
+  cron: name="snapshot" minute="*/10" job="{{ src }}/observer/./snap.sh"
+
+- name: Schedule event upload
+  cron: name="upload" minute="*/10" job="{{ src }}/observer/./upload.py {{ datadir }}/events.log 2>&1 >> /var/log/gallery/upload.log"
 
 - debug: Your Observer is ready. Reboot the board.

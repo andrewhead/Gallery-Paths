@@ -17,34 +17,46 @@ function debug() {
   echo "[`date`]: $1" >> $LOGFILE
 }
 
-debug "Starting script"
-debug "Starting raspiyuv"
+# MAIN
+(
+  # Lock ensures that this process is only running one at a time
+  flock -x -w 1 200 || exit 1
 
-raspiyuv\
-  -w $W \
-  -h $H \
-  --timelapse 1000 \
-  --nopreview \
-  --timeout 0 \
-  -o $DATADIR/image%09d.yuv &
+  debug "Starting script"
+  debug "Starting raspiyuv"
 
-debug "raspiyuv started in background"
-debug "Entering processing loop"
+  raspiyuv\
+    -w $W \
+    -h $H \
+    --timelapse 5000 \
+    --timeout 0 \
+    --nopreview \
+    --colfx 128:128 \
+    -o $DATADIR/image%04d.yuv &
 
-while ! test -f /tmp/stopsnap
-do
-  sleep ${2:-20}s
-  debug "Waking up to process files"
-  for i in $DATADIR/*.yuv
+  debug "raspiyuv started in background"
+  debug "Entering processing loop"
+
+  while ! test -f /tmp/stopsnap
   do
-    debug "Processing yuv $i"
-    res=`./read_qr $i $W $H`
-    debug "Result: $res"
-    if [[ $res != '' ]]
-    then
-      echo $res >> $EVENTFILE
-    fi
-    debug "Deleting yuv $i"
-    rm $i
+    sleep ${2:-20}s
+    debug "Waking up to process files"
+    for i in $DATADIR/*.yuv
+    do
+      if [[ $i == '*.yuv' ]]
+      then
+        debug "No new YUVs to process"
+        continue
+      fi
+      debug "Processing yuv $i"
+      res=`./read_qr $i $W $H`
+      debug "Result: $res"
+      if [[ $res != '' ]]
+      then
+        echo "$res" >> $EVENTFILE
+      fi
+      debug "Deleting yuv $i"
+      rm $i
+    done
   done
-done
+) 200>/var/lock/.snap.lock 
