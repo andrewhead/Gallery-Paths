@@ -26,11 +26,16 @@ def uploadDetections(lines, locationId, clientId):
     ''' Read detections from file and upload to server. '''
     for line in lines:
         data = line.split(',')
+        try:
+            visitorId = int(data[1])
+        except:
+            print "Skipping invalid visitor ID: " + str(data[1])
+            continue
         detection = {
             'time': data[0],
             'client_id': clientId,
             'location_id': locationId,
-            'visitor_id': int(data[1]),
+            'visitor_id': visitorId,
             'x1': float(data[2]),
             'y1': float(data[3]),
             'x2': float(data[4]),
