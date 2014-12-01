@@ -49,7 +49,7 @@ function debug() {
         continue
       fi
       debug "Processing yuv $i"
-      res=`./read_qr $i $W $H`
+      res=`/usr/local/gallery/src/observer/./read_qr $i $W $H`
       debug "Result: $res"
       if [[ $res != '' ]]
       then

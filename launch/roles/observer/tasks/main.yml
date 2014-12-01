@@ -53,8 +53,11 @@
   cron: name="network reboot" minute="*/10" job="{{ src }}/observer/./network_reboot.sh" user="root"
   sudo: true
 
-- name: Schedule snapshot procedure
-  cron: name="snapshot" minute="*/10" job="{{ src }}/observer/./snap.sh"
+- name: Schedule snapshot relaunch
+  cron: name="snapshot" minute="*/10" job="{{ snapjob }}"
+
+- name: Schedule snapshot on boot
+  cron: name="snapshot" special_time=reboot job="{{ snapjob }}"
 
 - name: Schedule event upload
   cron: name="upload" minute="*/10" job="{{ src }}/observer/./upload.py {{ datadir }}/events.log 2>&1 >> /var/log/gallery/upload.log"
