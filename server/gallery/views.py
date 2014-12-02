@@ -12,3 +12,8 @@ def home(request):
 def paths(request):
     context = {}
     return render(request, 'gallery/paths.html')
+
+
+def index(request):
+    context = {}
+    return render(request, 'gallery/index.html')

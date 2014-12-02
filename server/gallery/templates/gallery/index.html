@@ -5,6 +5,7 @@
 <!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
     
     <head>
+        {% load staticfiles %}
         
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -19,14 +20,14 @@
         
 
         <!-- Favicon.ico and apple-touch-icon.png (according to Apple docs). A good tool is http://iconifier.net/ -->
-        <link rel="shortcut icon" href="assets/ico/favicon.ico">
-        <link rel="apple-touch-icon" href="touch-icon-iphone.png" />
-        <link rel="apple-touch-icon" sizes="76x76" href="touch-icon-ipad.png" />
-        <link rel="apple-touch-icon" sizes="120x120" href="touch-icon-iphone-retina.png" />
-        <link rel="apple-touch-icon" sizes="152x152" href="touch-icon-ipad-retina.png" />
+        <link rel="shortcut icon" href="{% static "assets/ico/favicon.ico" %}">
+        <link rel="apple-touch-icon" href="{% static "touch-icon-iphone.png" %}" />
+        <link rel="apple-touch-icon" sizes="76x76" href="{% static "touch-icon-ipad.png" %}" />
+        <link rel="apple-touch-icon" sizes="120x120" href="{% static "touch-icon-iphone-retina.png" %}" />
+        <link rel="apple-touch-icon" sizes="152x152" href="{% static "touch-icon-ipad-retina.png" %}" />
 
         <!-- CSS, Normalize First, minify for production -->
-        <link rel="stylesheet" type='text/css' href="less/master.css"/>
+        <link rel="stylesheet" type='text/css' href="{% static "gallery/less/master.css" %}"/>
         
         <!-- Import web fonts using the link tag instead of CSS @import -->
         <link href='http://fonts.googleapis.com/css?family=Lato:300,400,900' rel='stylesheet' type='text/css'>
@@ -57,7 +58,7 @@
         <section class="call-to-action">
             <div class="cta-container cf">
                 <p>Already a user? </p>
-                <a class="btn" href="home.html">Get Working→</a>
+                <a class="btn" href="home">Get Working→</a>
             </div>
         </section>
         
@@ -125,22 +126,22 @@
                 </header>
                 <article class="cf">
                     <div class="img-circle-div">
-                        <img src="images/circle1.jpg"/>
+                        <img src="{% static "gallery/images/circle1.jpg" %}"/>
                         <h3>Andrew</h3>
                         <p>CS PhD.</p>
                     </div>
                     <div class="img-circle-div">
-                        <img src="images/circle2.jpg"/>
+                        <img src="{% static "gallery/images/circle2.jpg" %}"/>
                         <h3>Michelle</h3>
                         <p>Cog Sci, Art, & CS undergrad.</p>
                     </div>
                     <div class="img-circle-div">
-                        <img src="images/circle3.jpg"/>
+                        <img src="{% static "gallery/images/circle3.jpg" %}"/>
                         <h3>Zhiwei</h3>
                         <p>MechE PhD.</p>
                     </div>
                     <div class="img-circle-div">
-                        <img src="images/circle4.jpg"/>
+                        <img src="{% static "gallery/images/circle4.jpg" %}"/>
                         <h3>Christine</h3>
                         <p>MechE PhD.</p>
                     </div>
@@ -200,12 +201,12 @@
 
         <!-- Reference jQuery -->
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-        <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.10.2.min.js"><\/script>')</script>
+        <script>window.jQuery || document.write('<script src="{% static "gallery/js/vendor/jquery-1.10.2.min.js" %}"><\/script>')</script>
         
         <!-- Reference Javascript, minify for production -->
-        <script type="text/javascript" src="js/jquery.event.move.js"></script>
-        <script type="text/javascript" src="js/jquery.event.swipe.js"></script>
-        <script type="text/javascript" src="js/unslider.js"></script>
+        <script type="text/javascript" src="{% static "gallery/js/jquery.event.move.js" %}"></script>
+        <script type="text/javascript" src="{% static "gallery/js/jquery.event.swipe.js" %}"></script>
+        <script type="text/javascript" src="{% static "gallery/js/unslider.min.js" %}"></script>
         
         <!-- Unslider script -->
         <script>

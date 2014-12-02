@@ -13,6 +13,7 @@ urlpatterns = patterns('',
     url(r'^api/', include(sightingResource.urls)),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^home$', views.home),
+    url(r'^index$', views.index),
     url(r'^paths$', views.paths),
     url(r'^$', views.home),
 )
