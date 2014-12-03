@@ -21,10 +21,27 @@ def analytics(request):
 
 
 def events(request):
+
+    def flatten(d):
+        def items():
+            for key, value in d.items():
+                if isinstance(value, dict):
+                    for subkey, subvalue in flatten_dict(value).items():
+                        yield subkey, subvalue
+                else:
+                    yield key, value
+        return dict(items())
+
     recentSightings = reversed(Sighting.objects.order_by('-id')[:100])
     data = json.loads(serializers.serialize("json", recentSightings))
+    flattenedData = []
+
+    for d in data:
+        d[Sighting._meta.pk.name] = d.pop('pk')
+        flattenedData.append(flatten_dict(d))
+
     contextInstance = RequestContext(request, {
-        'data': data,
+        'data': flattenedData,
         'fields': Sighting._meta.fields,
     })
     return TemplateResponse(request, 'gallery/events.html', contextInstance)
