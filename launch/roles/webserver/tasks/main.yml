@@ -38,6 +38,7 @@
   - mysql-python
   - django
   - django-tastypie
+  - jsonpickle
 
 - name: Configure nginx sites
   template: src=nginx-site.j2 dest=/etc/nginx/sites-enabled/default

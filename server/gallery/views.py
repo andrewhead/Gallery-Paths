@@ -5,6 +5,7 @@ from django.shortcuts import render
 from django.template import RequestContext
 from django.template.response import TemplateResponse
 from django.core import serializers
+from django.db import connection
 import json
 import jsonpickle
 
@@ -17,14 +18,30 @@ def index(request):
 
 
 def analytics(request):
-    context = {}
+
+    ''' Count dwellings per exhibit. '''
+    cursor = connection.cursor()
+    cursor.execute("SET @last='';")
+    cursor.execute("""
+        SELECT last_location, COUNT(last_location) FROM (
+            SELECT id,@last AS last_location,@last:=location_id AS this_location 
+            FROM gallery_sighting 
+            HAVING last_location != this_location) 
+        AS sub GROUP BY last_location;
+    """)
+    dwellCounts = dict([(str(i[0]), int(i[1])) for i in cursor.fetchall()])
+    print dwellCounts
+    cursor.close()
+
+    ''' Get all sightings for map. '''
     sightings = list(Sighting.objects.all().values('visitor_id', 'location_id', 'time'))
     for s in sightings:
         s['visitor'] = s.pop('visitor_id')
         s['location'] = s.pop('location_id')
         s['tripIndex'] = 1
+
     context = {
-        'dwellings': {},
+        'dwellings': dwellCounts,
         'sightings': jsonpickle.encode(sightings, unpicklable=False),
     }
     return render(request, 'gallery/analytics.html', context)
