@@ -23,6 +23,9 @@
 - name: Create static files directory
   file: state=directory path={{ staticdir }} owner=ubuntu
 
+- name: Create log file
+  file: state=touch path=/var/log/gallery.log
+
 - name: Install virtualenv
   pip: name=virtualenv
   sudo: true
