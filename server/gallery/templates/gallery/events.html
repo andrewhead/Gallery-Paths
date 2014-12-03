@@ -1,0 +1,19 @@
+{% load event_extras %}
+<table>
+    <thead>
+        <tr>
+            {% for field in cached_fields %}
+                <th>{% get_verbose_name field %}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>            
+            {% for d in data %}
+                <tr>
+                    {% for field in fields %}
+                        <td>{% get_value_from_key d field %}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}            
+    </tbody>
+</table>

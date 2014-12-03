@@ -39,7 +39,7 @@ function debug() {
 
   while ! test -f /tmp/stopsnap
   do
-    sleep ${2:-20}s
+    sleep ${2:-2}s
     debug "Waking up to process files"
     for i in $DATADIR/*.yuv
     do
@@ -54,6 +54,7 @@ function debug() {
       if [[ $res != '' ]]
       then
         echo "$res" >> $EVENTFILE
+        /usr/local/gallery/src/observer/./upload.py $EVENTFILE
       fi
       debug "Deleting yuv $i"
       rm $i

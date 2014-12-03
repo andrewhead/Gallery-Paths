@@ -10,10 +10,10 @@ from gallery import views
 sightingResource = SightingResource()
 
 urlpatterns = patterns('',
+    url(r'^index$', views.index),
+    url(r'^$', views.index),
+    url(r'^analytics$', views.analytics),
+    url(r'^events$', views.events),
     url(r'^api/', include(sightingResource.urls)),
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^home$', views.home),
-    url(r'^index$', views.index),
-    url(r'^paths$', views.paths),
-    url(r'^$', views.home),
 )
