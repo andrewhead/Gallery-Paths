@@ -26,7 +26,7 @@ def events(request):
         def items():
             for key, value in d.items():
                 if isinstance(value, dict):
-                    for subkey, subvalue in flatten_dict(value).items():
+                    for subkey, subvalue in flatten(value).items():
                         yield subkey, subvalue
                 else:
                     yield key, value
@@ -38,7 +38,7 @@ def events(request):
 
     for d in data:
         d[Sighting._meta.pk.name] = d.pop('pk')
-        flattenedData.append(flatten_dict(d))
+        flattenedData.append(flatten(d))
 
     contextInstance = RequestContext(request, {
         'data': flattenedData,
