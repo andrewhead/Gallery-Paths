@@ -34,7 +34,7 @@ LOGGING = {
             'handlers': ['file'],
             'propagate': True,
             'level': 'DEBUG',
-        }
+        },
         'gallery': {
             'handlers': ['file'],
             'level': 'DEBUG',
