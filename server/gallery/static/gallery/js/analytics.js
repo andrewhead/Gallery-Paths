@@ -5,6 +5,7 @@ $(function(){
     };
 
     /* Dwell time chart */
+    /*
     var dwellTimeData = {
         0: 200,
         1: 175,
@@ -13,7 +14,7 @@ $(function(){
         4: 5,
         5: 120
     }
-
+    */
     var margin = {top: 10, bottom: 10, right: 10, left: 60};
     var chart = d3.select("#dwell_chart");
     var w = px_to_num(chart.style("width"));
@@ -53,26 +54,28 @@ $(function(){
 
     /*  Chord chart */
     /* We assume that visit data is already sorted when it comes back from the server */
-    var visitData = [
-        {user: 1, tripIndex: 1, date: new Date("2014-01-01T12:00:00Z"), location: 1},
-        {user: 1, tripIndex: 1, date: new Date("2014-01-01T12:01:00Z"), location: 2},
-        {user: 1, tripIndex: 1, date: new Date("2014-01-01T12:02:00Z"), location: 3},
-        {user: 1, tripIndex: 1, date: new Date("2014-01-01T12:03:00Z"), location: 4},
-        {user: 1, tripIndex: 1, date: new Date("2014-01-01T12:04:00Z"), location: 5},
-        {user: 1, tripIndex: 1, date: new Date("2014-01-01T12:05:00Z"), location: 6},
-        {user: 2, tripIndex: 1, date: new Date("2014-01-01T13:00:00Z"), location: 1},
-        {user: 2, tripIndex: 1, date: new Date("2014-01-01T13:01:00Z"), location: 3},
-        {user: 2, tripIndex: 1, date: new Date("2014-01-01T13:02:00Z"), location: 5},
-        {user: 2, tripIndex: 1, date: new Date("2014-01-01T13:03:00Z"), location: 6},
-        {user: 2, tripIndex: 1, date: new Date("2014-01-01T13:04:00Z"), location: 4},
-        {user: 2, tripIndex: 1, date: new Date("2014-01-01T13:05:00Z"), location: 2}
+    /*
+    var sightings = [
+        {user: 1, tripIndex: 1, time: new Date("2014-01-01T12:00:00Z"), location: 1},
+        {user: 1, tripIndex: 1, time: new Date("2014-01-01T12:01:00Z"), location: 2},
+        {user: 1, tripIndex: 1, time: new Date("2014-01-01T12:02:00Z"), location: 3},
+        {user: 1, tripIndex: 1, time: new Date("2014-01-01T12:03:00Z"), location: 4},
+        {user: 1, tripIndex: 1, time: new Date("2014-01-01T12:04:00Z"), location: 5},
+        {user: 1, tripIndex: 1, time: new Date("2014-01-01T12:05:00Z"), location: 6},
+        {user: 2, tripIndex: 1, time: new Date("2014-01-01T13:00:00Z"), location: 1},
+        {user: 2, tripIndex: 1, time: new Date("2014-01-01T13:01:00Z"), location: 3},
+        {user: 2, tripIndex: 1, time: new Date("2014-01-01T13:02:00Z"), location: 5},
+        {user: 2, tripIndex: 1, time: new Date("2014-01-01T13:03:00Z"), location: 6},
+        {user: 2, tripIndex: 1, time: new Date("2014-01-01T13:04:00Z"), location: 4},
+        {user: 2, tripIndex: 1, time: new Date("2014-01-01T13:05:00Z"), location: 2}
     ];
+    */
 
     /* Nest data by user and trip index. */
     var paths = d3.nest()
         .key(function(d) { return d.user; })
         .key(function(d) { return d.tripIndex; })
-        .entries(visitData);
+        .entries(window.sightings);
     
     /* Get nodes as list of all locations recorded. */
     var parentNode = {
@@ -81,8 +84,8 @@ $(function(){
     };
     var nodeMap = {"": parentNode};
     var nodes = [parentNode];
-    for (var i = 0; i < visitData.length; i++) {
-        var loc = visitData[i].location;
+    for (var i = 0; i < window.sightings.length; i++) {
+        var loc = window.sightings[i].location;
         if (!nodeMap.hasOwnProperty(loc)) {
             var name = "Painting" + loc;
             var node = {
@@ -103,14 +106,14 @@ $(function(){
         for (var j = 0; j < userPaths.length; j++) {
             var userTripPaths = userPaths[j].values;
             userTripPaths.sort(function(a, b) {
-                return a.date - b.date;
+                return a.time - b.time;
             });
             for (var k = 0; k < userTripPaths.length - 1; k++) {
                 links.push({
                     source: nodeMap[userTripPaths[k].location], 
                     target: nodeMap[userTripPaths[k + 1].location],
-                    startDate: userTripPaths[k].date,
-                    endDate: userTripPaths[k + 1].date,
+                    startDate: userTripPaths[k].time,
+                    endDate: userTripPaths[k + 1].time,
                     user: i,
                     trip: j
                 });

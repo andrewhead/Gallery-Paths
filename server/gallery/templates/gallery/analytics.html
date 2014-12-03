@@ -15,6 +15,10 @@
         <script type="text/javascript" src="https://code.jquery.com/ui/1.11.1/jquery-ui.min.js"></script>
         <script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
         <script type="text/javascript" src="{% static "gallery/js/analytics.js" %}"></script>
+        <script type="text/javascript">
+            window.dwellTimeData = {{ dwellings|safe }};
+            window.sightings = {{ sightings|safe }};
+        </script>
     </head>
     <body>
 		<header id="main-header-home">
@@ -27,14 +31,19 @@
             <div class="container">
                 <article class="cf">
                 <div class="graph_div">
-                    <h3>Visitor Time Spent</h3>
+                    <h3>Dwellings</h3>
                     <div id="dwell_chart"></div>
-                    <p>Length of the total time spent, by piece.</p>
+                    <p>Number of visits, by piece.</p>
                 </div>
                 <div class="graph_div">
                     <h3>User Mapping</h3>
                     <div id="bundle_chart"></div>
                     <p>Paths through your gallery.</p>
+                </div>
+                <div class="graph_div">
+                    <h3>Time Spent Per Dwelling</h3>
+                    <div id="time_chart"></div>
+                    <p>Average time spent, by piece.</p>
                 </div>
             </article>
             </div>

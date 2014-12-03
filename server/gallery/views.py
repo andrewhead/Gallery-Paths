@@ -6,6 +6,7 @@ from django.template import RequestContext
 from django.template.response import TemplateResponse
 from django.core import serializers
 import json
+import jsonpickle
 
 from models import Sighting
 
@@ -17,6 +18,15 @@ def index(request):
 
 def analytics(request):
     context = {}
+    sightings = list(Sighting.objects.all().values('visitor_id', 'location_id', 'time'))
+    for s in sightings:
+        s['visitor'] = s.pop('visitor_id')
+        s['location'] = s.pop('location_id')
+        s['tripIndex'] = 1
+    context = {
+        'dwellings': {},
+        'sightings': jsonpickle.encode(sightings, unpicklable=False),
+    }
     return render(request, 'gallery/analytics.html', context)
 
 
