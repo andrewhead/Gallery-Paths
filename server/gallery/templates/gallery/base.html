@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html class="no-js">
+    <head>
+        {% load staticfiles %}
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="description" content="Gestalt is a UC Berkeley Student project, aiming to bring measurment to art interaction.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="author" content="Andrew Head, Michelle Galemmo, Z Wu, Christi Gregg">
+        <meta name="keywords" content="art work, art analytics, gallery measurement, sheer brilliance, cs294">
+        <link rel="shortcut icon" href="{% static "assets/ico/favicon.ico" %}">
+        <link rel="apple-touch-icon" href="{% static "touch-icon-iphone.png" %}" />
+        <link rel="apple-touch-icon" sizes="76x76" href="{% static "touch-icon-ipad.png" %}" />
+        <link rel="apple-touch-icon" sizes="120x120" href="{% static "touch-icon-iphone-retina.png" %}" />
+        <link rel="apple-touch-icon" sizes="152x152" href="{% static "touch-icon-ipad-retina.png" %}" />
+        <link rel="stylesheet" type='text/css' href="{% static "gallery/less/master.css" %}"/>
+        <link rel="stylesheet" type='text/css' href="{% static "gallery/less/gestalt.css" %}"/>
+        <link href='http://fonts.googleapis.com/css?family=Lato:300,400,900' rel='stylesheet' type='text/css'>
+        <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet"/>
+        <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+        {% block head %}
+        {% endblock %}
+    </head>
+    <body>
+        {% block content %}
+        {% endblock %}
+    </body>
+</html>

@@ -1,0 +1,76 @@
+{% extends "gallery/base.html" %}
+{% block head %}
+    {% load staticfiles %}
+    <title>My Exhibitions</title>
+{% endblock %}
+{% block content %}
+    <header id="header">
+        <h3>Open Exhibitions</h3>
+    </header>
+    <div class="container">
+        <table style="width: 100%;">
+            <thead>
+                <tr>
+                    <th>Exhibition Name</th>
+                    <th>Start Date</th>
+                    <th>Analytics</th>
+                    <th>Close</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for e in exhibitions %}
+                {% if not e.end %}
+                <tr>
+                    <td>{{ e.name }}</td>
+                    <td>{{ e.start }}</td>
+                    <td class="centered">
+                        <form action="analytics" method="GET">
+                            <input type="hidden" name="exhibition" value={{ e.id }}></input>
+                            <input class="view_btn" type="submit" value="View"></input>
+                        </form>
+                    </td>
+                    <td class="centered">
+                        <form action="exhibitions" method="POST">
+                            <input type="hidden" name="exhibition" value={{ e.id }}></input>
+                            <input class="view_btn" type="submit" value="Close"></input>
+                        </form>
+                    </td>
+                </tr>
+                {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <header id="header">
+        <h3>Completed Exhibitions</h3>
+    </header>
+    <div class="container">
+        <table style="width: 100%;">
+            <thead>
+                <tr>
+                    <th>Exhbition Name</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Analytics</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for e in exhibitions %}
+                {% if e.end %}
+                <tr>
+                    <td>{{ e.name }}</td>
+                    <td>{{ e.start }}</td>
+                    <td>{{ e.end }}</td>
+                    <td class="centered">
+                        <form action="analytics" method="GET">
+                            <input type="hidden" name="exhibition" value={{ e.id }}></input>
+                            <input class="view_btn" type="submit" value="View"></input>
+                        </form>
+                    </td>
+                </tr>
+                {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

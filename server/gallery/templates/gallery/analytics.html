@@ -1,58 +1,46 @@
-<html>
-    <head>
-        <title>[Astute] Gallery Analytics</title>
-        {% load staticfiles %}
-        <link rel="shortcut icon" href="{% static "gallery/assets/ico/favicon.ico" %}">
-        <link rel="apple-touch-icon" href="{% static "gallery/touch-icon-iphone.png" %}" />
-        <link rel="apple-touch-icon" sizes="76x76" href="{% static "gallery/touch-icon-ipad.png" %}" />
-        <link rel="apple-touch-icon" sizes="120x120" href="{% static "gallery/touch-icon-iphone-retina.png" %}" />
-        <link rel="apple-touch-icon" sizes="152x152" href="{% static "gallery/touch-icon-ipad-retina.png" %}" />
-        <link rel="stylesheet" type='text/css' href="{% static "gallery/less/master.css" %}"/>
-        <link rel="stylesheet" type='text/css' href="{% static "gallery/less/gestalt.css" %}"/>
-        <link href='http://fonts.googleapis.com/css?family=Lato:300,400,900' rel='stylesheet' type='text/css'>
-        <link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet"/>
-        <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-        <script type="text/javascript" src="https://code.jquery.com/ui/1.11.1/jquery-ui.min.js"></script>
-        <script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
-        <script type="text/javascript" src="{% static "gallery/js/analytics.js" %}"></script>
-        <script type="text/javascript">
-            window.dwellTimeData = {{ dwellings|safe }};
-            window.sightings = {{ sightings|safe }};
-        </script>
-    </head>
-    <body>
-		<header id="main-header-home">
-            <div class="container">
-                <h1>Your Analytics</h1>
-                <p>Welcome back!</p>
+{% extends "gallery/base.html" %}
+{% block head %}
+    {% load staticfiles %}
+    <title>[Astute] Gallery Analytics</title>
+    <script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
+    <script type="text/javascript" src="{% static "gallery/js/analytics.js" %}"></script>
+    <script type="text/javascript">
+        window.dwellTimeData = {{ dwellings|safe }};
+        window.sightings = {{ sightings|safe }};
+    </script>
+{% endblock %}
+{% block content %}
+    <header id="main-header-home">
+        <div class="container">
+            <h1>Your Analytics</h1>
+            <p>Welcome back!</p>
+        </div>
+    </header>
+    <section id="graphs">
+        <div class="container">
+            <article class="cf">
+            <div class="graph_div">
+                <h3>Dwellings</h3>
+                <div id="dwell_chart"></div>
+                <p>Number of visits, by piece.</p>
             </div>
-		</header>
-        <section id="graphs">
-            <div class="container">
-                <article class="cf">
-                <div class="graph_div">
-                    <h3>Dwellings</h3>
-                    <div id="dwell_chart"></div>
-                    <p>Number of visits, by piece.</p>
-                </div>
-                <div class="graph_div">
-                    <h3>User Mapping</h3>
-                    <div id="bundle_chart"></div>
-                    <p>Paths through your gallery.</p>
-                </div>
-                <div class="graph_div">
-                    <h3>Time Spent Per Dwelling</h3>
-                    <div id="time_chart"></div>
-                    <p>Average time spent, by piece.</p>
-                </div>
-            </article>
+            <div class="graph_div">
+                <h3>User Mapping</h3>
+                <div id="bundle_chart"></div>
+                <p>Paths through your gallery.</p>
             </div>
-        </section>
-        <section class="call-to-action">
-            <div class="cta-container cf">
-                <p>Need Help? </p>
-                <a class="btn" href="mailto:mgalemmo@gmail.com">Contact us!</a>
+            <div class="graph_div">
+                <h3>Time Spent Per Dwelling</h3>
+                <div id="time_chart"></div>
+                <p>Average time spent, by piece.</p>
             </div>
-        </section>
-    </body>
-</html>
+        </article>
+        </div>
+    </section>
+    <section class="call-to-action">
+        <div class="cta-container cf">
+            <p>Need Help? </p>
+            <a class="btn" href="mailto:mgalemmo@gmail.com">Contact us!</a>
+        </div>
+    </section>
+{% endblock %}
