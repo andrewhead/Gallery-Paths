@@ -5,10 +5,12 @@ from django.shortcuts import render, render_to_response
 from django.template import RequestContext
 from django.template.response import TemplateResponse
 from django.core import serializers
+from django.contrib.auth.decorators import login_required
 from django.db import connection
 from django.http import HttpResponseRedirect
 import json
 import jsonpickle
+import datetime
 
 from forms import ExhibitionForm, ExhibitForm
 from models import Sighting, Exhibition, Exhibit
@@ -19,6 +21,7 @@ def index(request):
     return render(request, 'gallery/index.html')
 
 
+@login_required
 def exhibits(request):
 
     def _getExhibitForms(exhibition, post=False, withFiles=False):
@@ -70,22 +73,30 @@ def exhibits(request):
         return render(request, 'gallery/exhibits.html', context)
 
 
+@login_required
 def exhibitions(request):
 
     exhibitions = Exhibition.objects.all()
 
-    if request.method == "POST":
-        form = ExhibitionForm(request.POST)
-        if form.is_valid():
-            form.save()
+    if request.method == 'POST':
+        if request.POST.get('action') == 'open':
+            form = ExhibitionForm(request.POST)
+            if form.is_valid():
+                form.save()
+                return HttpResponseRedirect('exhibitions')
+            else:
+                return render_to_response("gallery/exhibitions.html", {
+                    "newForm": newForm,
+                    "exhibitions": exhibitions,
+                }, context_instance=RequestContext(request))
+        elif request.POST.get('action') == 'close':
+            exhibition = Exhibition.objects.get(pk=request.POST.get('exhibition'))
+            today = datetime.datetime.utcnow().date()
+            exhibition.end = today
+            exhibition.save()
             return HttpResponseRedirect('exhibitions')
-        else:
-            return render_to_response("gallery/exhibitions.html", {
-                "newForm": newForm,
-                "exhibitions": exhibitions,
-            }, context_instance=RequestContext(request))
 
-    if request.method == "GET":
+    if request.method == 'GET':
         newForm = ExhibitionForm(initial={'name': "Exhibition Name"})
         context = {
             'newForm': newForm,
@@ -94,6 +105,7 @@ def exhibitions(request):
         return render(request, 'gallery/exhibitions.html', context)
 
 
+@login_required
 def analytics(request):
 
     ''' Count dwellings per exhibit. '''

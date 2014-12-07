@@ -20,6 +20,7 @@ urlpatterns = patterns('',
     url(r'^events$', views.events),
     url(r'^api/', include(sightingResource.urls)),
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^accounts/', include('registration.backends.simple.urls')),
 )
 
 ''' Serve media files via Django if we are in DEBUG mode. '''

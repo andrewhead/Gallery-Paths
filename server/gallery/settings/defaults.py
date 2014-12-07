@@ -32,6 +32,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'tastypie',
     'gallery',
+    'registration',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -81,3 +82,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
+
+
+# Registration
+ACCOUNT_ACTIVATION_DAYS = 7
