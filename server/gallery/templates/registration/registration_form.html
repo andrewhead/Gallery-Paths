@@ -3,9 +3,15 @@
 
 {% block content %}
 <form method="post" action=".">
-  {% csrf_token %}
-  {{ form.as_p }}
-
-  <input type="submit" value="{% trans 'Submit' %}" />
+    {% csrf_token %}
+    <header>
+        <h3>Register</h3>
+    </header>
+    <div class="centered">
+        {{ form.as_p }}
+    </div>
+    <div class="centered">
+        <input type="submit" value="{% trans 'Submit' %}" />
+    </div>
 </form>
 {% endblock %}
