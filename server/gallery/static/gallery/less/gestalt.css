@@ -64,6 +64,15 @@ form.django input[type="file"] {
   margin-top: 10px;
 }
 
+div.centered {
+  width: 100%;
+  text-align: center;
+}
+
+div.new {
+  margin-top: 10px;
+}
+
 /* Content */
 p.error {
   color: red;

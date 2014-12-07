@@ -52,7 +52,6 @@ def exhibits(request):
                 f.save()
             return HttpResponseRedirect('exhibits?e=' + str(exhibition.pk))
         else:
-            print updateForms[0].__dict__
             return render_to_response("gallery/exhibits.html", {
                 "newForm": newForm,
                 "forms": updateForms,
@@ -72,10 +71,27 @@ def exhibits(request):
 
 
 def exhibitions(request):
-    context = {
-        'exhibitions': Exhibition.objects.all()
-    }
-    return render(request, 'gallery/exhibitions.html', context)
+
+    exhibitions = Exhibition.objects.all()
+
+    if request.method == "POST":
+        form = ExhibitionForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect('exhibitions')
+        else:
+            return render_to_response("gallery/exhibitions.html", {
+                "newForm": newForm,
+                "exhibitions": exhibitions,
+            }, context_instance=RequestContext(request))
+
+    if request.method == "GET":
+        newForm = ExhibitionForm(initial={'name': "Exhibition Name"})
+        context = {
+            'newForm': newForm,
+            'exhibitions': Exhibition.objects.all(),
+        }
+        return render(request, 'gallery/exhibitions.html', context)
 
 
 def analytics(request):

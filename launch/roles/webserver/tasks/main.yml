@@ -20,6 +20,10 @@
 - name: Create scripts directory
   file: state=directory path={{ scriptdir }} owner=ubuntu
 
+- name: Create media files directory
+  file: state=directory path={{ mediadir }} owner=ubuntu
+  sudo: true
+
 - name: Create static files directory
   file: state=directory path={{ staticdir }} owner=ubuntu
 
@@ -39,6 +43,7 @@
   - django
   - django-tastypie
   - jsonpickle
+  - Pillow
 
 - name: Configure nginx sites
   template: src=nginx-site.j2 dest=/etc/nginx/sites-enabled/default

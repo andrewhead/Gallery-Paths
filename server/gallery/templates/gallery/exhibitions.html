@@ -31,6 +31,8 @@
                     </td>
                     <td class="centered">
                         <form action="exhibitions" method="POST">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="close"></input>
                             <input type="hidden" name="exhibition" value={{ e.id }}></input>
                             <input class="view_btn" type="submit" value="Close"></input>
                         </form>
@@ -40,6 +42,14 @@
                 {% endfor %}
             </tbody>
         </table>
+        <form action="exhibitions" method="POST" class="django">
+            {% csrf_token %}
+            <div class="new centered"> 
+                <p>Starting Something New?</p>
+                {{ newForm.name }}
+                <input type="submit" value="Open New Exhibition"></input>
+            </div>
+        </form>
     </div>
     <header id="header">
         <h3>Completed Exhibitions</h3>

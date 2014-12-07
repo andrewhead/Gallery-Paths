@@ -2,6 +2,7 @@ projectdir: /usr/local/gallery
 venv: "{{ projectdir }}/venv"
 src: "{{ projectdir }}/src"
 staticdir: "{{ projectdir }}/static"
+mediadir: "/var/www/gallerypaths.com/media"
 djdir: "{{ src }}/server"
 appname: "gallery"
 scriptdir: "{{ projectdir }}/scripts"
