@@ -14,7 +14,7 @@ server {
  
     # Directories to serve
     location /media/ {
-        alias {{ mediadir }};
+        alias {{ mediadir }}/;
     }
 
     # Redirect the rest to your django app server
