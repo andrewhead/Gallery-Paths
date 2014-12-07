@@ -11,6 +11,7 @@
   - libmysqlclient-dev
   - python-dev
   - python-mysqldb
+  - supervisor
   sudo: true
 
 - name: Create project directory
@@ -47,7 +48,7 @@
   - Pillow
 
 - name: Configure nginx sites
-  template: src=nginx-site.j2 dest=/etc/nginx/sites-enabled/default
+  template: src=nginx-site.j2 dest=/etc/nginx/sites-enabled/{{ appname }}
   sudo: true
 
 - name: Remove default nginx user
@@ -82,11 +83,16 @@
   - migrate
   - collectstatic
 
-- name: Copy startup script
-  template: src=startserver.j2 dest={{ scriptdir }}/startserver.sh  
+- name: Copy app to supervisor
+  template: src=supervisor.j2 dest=/etc/supervisor/conf.d/{{ appname }}.conf
+  sudo: true
 
-- name: Start server
-  command: /bin/bash {{ scriptdir }}/startserver.sh
+- name: Start server application
+  supervisorctl: name={{ appname }} state={{ item }}
+  with_items:
+  - present
+  - restarted
+  sudo: true
 
 - name: Restart nginx
   service: name=nginx state=restarted

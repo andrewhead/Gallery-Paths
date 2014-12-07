@@ -1,18 +1,17 @@
-upstream djangoapp_server {
-    server localhost:8000 fail_timeout=0;
+upstream {{ appname }}_server {
+    server localhost:{{ localport }} fail_timeout=0;
 }
  
 server {
     listen 80;
-    
+	server_name {{ domain }} www.{{ domain }};
+
     keepalive_timeout 5;
  
-    # Directories to serve
     location /static/ {
         alias {{ projectdir }}/static/;
     }
  
-    # Directories to serve
     location /media/ {
         alias {{ mediadir }}/;
     }
@@ -24,7 +23,7 @@ server {
         proxy_redirect off;
  
         if (!-f $request_filename) {
-            proxy_pass http://djangoapp_server;
+            proxy_pass http://{{ appname }}_server;
             break;
         }
     }

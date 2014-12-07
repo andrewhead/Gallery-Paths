@@ -1,3 +1,5 @@
+domain: gallerypaths.com
+localport: 8000
 projectdir: /usr/local/gallery
 venv: "{{ projectdir }}/venv"
 src: "{{ projectdir }}/src"
