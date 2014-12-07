@@ -1,3 +1,75 @@
+/* Components */
+table {
+  width: 100%;
+}
+
+table, th, td {
+  border: 1px solid gray;
+}
+
+td {
+  padding-left: 10px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+td.centered {
+  text-align: center;
+}
+
+tbody tr:nth-child(odd) {
+  background: #eee;
+}
+
+tbody tr:nth-child(even) {
+  background: white;
+}
+
+table input[type="submit"] {
+  width: 70%;
+  display: block;
+  margin: auto;
+}
+
+.save_btn {
+  width: 40%;
+  display: block;
+  margin: auto;
+  margin-top: 20px;
+}
+
+img.thumbnail {
+  height: 70px;
+  display: block;
+  margin: auto;
+}
+
+from.django input[type="text"] {
+  width: 100%;
+}
+
+form.django input[type="number"] {
+  display: block;
+  margin: auto;
+  width: 100px;
+}
+
+form.django input[type="file"] {
+  width: 50%;
+  height: 20px;
+  line-height: 10px;
+  font-size: 16px;
+  display: block;
+  margin: auto;
+  margin-top: 10px;
+}
+
+/* Content */
+p.error {
+  color: red;
+}
+
+/* Fore components */
 .graph_div {
   width: 100%;
 }
@@ -6,6 +78,7 @@
   height: 200px;
 }
 
+/* D3 Graphics */
 .node {
   font: 11px "Helvetica Neue", Helvetica, Arial, sans-serif;
 }

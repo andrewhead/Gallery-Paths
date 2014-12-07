@@ -1,20 +1,81 @@
 # encoding: utf-8
 
 from __future__ import unicode_literals
-from django.shortcuts import render
+from django.shortcuts import render, render_to_response
 from django.template import RequestContext
 from django.template.response import TemplateResponse
 from django.core import serializers
 from django.db import connection
+from django.http import HttpResponseRedirect
 import json
 import jsonpickle
 
-from models import Sighting
+from forms import ExhibitionForm, ExhibitForm
+from models import Sighting, Exhibition, Exhibit
 
 
 def index(request):
     context = {}
     return render(request, 'gallery/index.html')
+
+
+def exhibits(request):
+
+    def _getExhibitForms(exhibition, post=False, withFiles=False):
+        forms = []
+        ids = [e.id for e in Exhibit.objects.filter(exhibition=exhibition)]
+        for eid in ids:
+            args = []
+            kwargs = {}
+            if post:
+                args.append(request.POST)
+            if withFiles:
+                args.append(request.FILES)
+            f = ExhibitForm(*args, prefix=str(eid), instance=Exhibit.objects.get(pk=eid))
+            forms.append(f)
+        return forms
+
+    if request.method == "POST":
+        exhibition = Exhibition.objects.get(pk=request.POST.get('e', -1))
+        newForm = ExhibitForm(request.POST, request.FILES, prefix='new')
+        formsToSave = []
+
+        if request.POST.get("action") == "update":
+            updateForms = _getExhibitForms(exhibition, post=True, withFiles=True)
+            formsToSave.extend(updateForms)
+        elif request.POST.get("action") == "add":
+            updateForms = _getExhibitForms(exhibition)
+            formsToSave.append(newForm)
+
+        if all([f.is_valid() for f in formsToSave]):
+            for f in formsToSave:
+                f.save()
+            return HttpResponseRedirect('exhibits?e=' + str(exhibition.pk))
+        else:
+            print updateForms[0].__dict__
+            return render_to_response("gallery/exhibits.html", {
+                "newForm": newForm,
+                "forms": updateForms,
+                "exhibition": exhibition,
+            }, context_instance=RequestContext(request))
+
+    if request.method == "GET":
+        exhibition = Exhibition.objects.get(pk=request.GET.get('e', -1))
+        updateForms = _getExhibitForms(exhibition)
+        newForm = ExhibitForm(prefix='new', initial={'exhibition': exhibition})
+        context = {
+            'forms': updateForms,
+            'newForm': newForm,
+            'exhibition': exhibition,
+        }
+        return render(request, 'gallery/exhibits.html', context)
+
+
+def exhibitions(request):
+    context = {
+        'exhibitions': Exhibition.objects.all()
+    }
+    return render(request, 'gallery/exhibitions.html', context)
 
 
 def analytics(request):
@@ -30,7 +91,6 @@ def analytics(request):
         AS sub GROUP BY last_location;
     """)
     dwellCounts = dict([(str(i[0]), int(i[1])) for i in cursor.fetchall()])
-    print dwellCounts
     cursor.close()
 
     ''' Get all sightings for map. '''

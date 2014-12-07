@@ -1,0 +1,79 @@
+{% extends "gallery/base.html" %}
+{% block head %}
+    <title>Edit Exhibits</title>
+{% endblock %}
+{% block content %}
+<div class="container">
+    <form action="exhibits" method="POST" enctype="multipart/form-data" class="django">
+        {% csrf_token %}
+        <header id="header">
+            <h3>New Exhibit</h3>
+        </header>
+        {% for field in newForm %}
+        {% if field.errors %}
+        <p class="error">{{ field.name }}: {{ field.errors.0 }}</p>
+        {% endif %}
+        {% endfor %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Attendette ID</th>
+                    <th>Thumbnail</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{ newForm.name }}</td>
+                    <td>{{ newForm.location_id }}</td>
+                    <td>{{ newForm.image }}</td>
+                </tr>
+            </tbody>
+        </table>
+        {{ newForm.exhibition }}
+        <input type="hidden" name="action" value="add"/>
+        <input type="hidden" name="e" value="{{ exhibition.pk }}"/>
+        <input type="submit" value="Add Exhibit" class="save_btn"/>
+    </form>
+    <form action="exhibits" method="POST" enctype="multipart/form-data" class="django">
+        {% csrf_token %}
+        <header id="header">
+            <h3>Exhibits</h3>
+        </header>
+        {% for form in forms %}
+        {% for field in form %}
+        {% if field.errors %}
+        <p class="error">{{ field.name }}: {{ field.errors.0 }}</p>
+        {% endif %}
+        {% endfor %}
+        {% endfor %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Attendette ID</th>
+                    <th>Thumbnail</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for form in forms %}
+                <tr>
+                    <td>{{ form.name }}</td>
+                    <td>{{ form.location_id }}</td>
+                    <td>
+                        <img src="{{ form.instance.image.url }}" class="thumbnail"/>
+                        {{ form.image }}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% for form in forms %}
+        {{ form.exhibition }}
+        {% endfor %}
+        <input type="hidden" name="action" value="update"/>
+        <input type="hidden" name="e" value="{{ exhibition.pk }}"/>
+        <input type="submit" value="Save Exhibits" class="save_btn"/>
+    </form>
+</div>
+{% endblock %}

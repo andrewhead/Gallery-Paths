@@ -7,6 +7,7 @@ DEBUG = False
 TEMPLATE_DEBUG = False
 
 STATIC_ROOT = os.path.join(os.path.abspath(os.sep), 'usr', 'local', 'gallery', 'static')
+MEDIA_ROOT = os.path.join(os.path.abspath(os.sep), 'var', 'www', 'gallerypaths.com', 'media')
 
 ALLOWED_HOSTS = [
     '.gallerypaths.com',

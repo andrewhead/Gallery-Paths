@@ -7,3 +7,4 @@ DEBUG = True
 TEMPLATE_DEBUG = True
 
 STATIC_ROOT = os.path.join(BASE_DIR, os.path.pardir, 'static')
+MEDIA_ROOT = os.path.join(BASE_DIR, os.path.pardir, 'media')
