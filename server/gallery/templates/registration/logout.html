@@ -2,5 +2,9 @@
 {% load i18n %}
 
 {% block content %}
-<p>{% trans "Logged out" %}</p>
+<div class="centered">
+    <h3>{% trans "You have left the gallery." %}</h3>
+    <h4><a href="/index">Back to Main Page</h4>
+    <h4><a href="/accounts/login/">Log In</h4>
+</div>
 {% endblock %}

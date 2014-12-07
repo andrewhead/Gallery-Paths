@@ -22,6 +22,15 @@
         {% endblock %}
     </head>
     <body>
+        <div class="banner">
+            <p id="hidden_left"></p>
+            <p class="header">Astute</p>
+            {% if user.is_anonymous %}
+            <p class="loginout"><a href="/accounts/login">Log In</a></p>
+            {% else %}
+            <p class="loginout"><a href="/accounts/logout">Log Out</a></p>
+            {% endif %}
+        </div>
         {% block content %}
         {% endblock %}
     </body>

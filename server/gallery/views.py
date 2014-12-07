@@ -26,7 +26,7 @@ def exhibits(request):
 
     def _getExhibitForms(exhibition, post=False, withFiles=False):
         forms = []
-        ids = [e.id for e in Exhibit.objects.filter(exhibition=exhibition)]
+        ids = [e.id for e in Exhibit.objects.filter(user=request.user, exhibition=exhibition)]
         for eid in ids:
             args = []
             kwargs = {}
@@ -39,7 +39,7 @@ def exhibits(request):
         return forms
 
     if request.method == "POST":
-        exhibition = Exhibition.objects.get(pk=request.POST.get('e', -1))
+        exhibition = Exhibition.objects.get(user=request.user, pk=request.POST.get('e', -1))
         newForm = ExhibitForm(request.POST, request.FILES, prefix='new')
         formsToSave = []
 
@@ -52,6 +52,7 @@ def exhibits(request):
 
         if all([f.is_valid() for f in formsToSave]):
             for f in formsToSave:
+                f.instance.user = request.user
                 f.save()
             return HttpResponseRedirect('exhibits?e=' + str(exhibition.pk))
         else:
@@ -62,7 +63,7 @@ def exhibits(request):
             }, context_instance=RequestContext(request))
 
     if request.method == "GET":
-        exhibition = Exhibition.objects.get(pk=request.GET.get('e', -1))
+        exhibition = Exhibition.objects.get(user=request.user, pk=request.GET.get('e', -1))
         updateForms = _getExhibitForms(exhibition)
         newForm = ExhibitForm(prefix='new', initial={'exhibition': exhibition})
         context = {
@@ -76,12 +77,13 @@ def exhibits(request):
 @login_required
 def exhibitions(request):
 
-    exhibitions = Exhibition.objects.all()
+    exhibitions = Exhibition.objects.filter(user=request.user)
 
     if request.method == 'POST':
         if request.POST.get('action') == 'open':
             form = ExhibitionForm(request.POST)
             if form.is_valid():
+                form.instance.user = request.user
                 form.save()
                 return HttpResponseRedirect('exhibitions')
             else:
@@ -100,7 +102,7 @@ def exhibitions(request):
         newForm = ExhibitionForm(initial={'name': "Exhibition Name"})
         context = {
             'newForm': newForm,
-            'exhibitions': Exhibition.objects.all(),
+            'exhibitions': Exhibition.objects.filter(user=request.user),
         }
         return render(request, 'gallery/exhibitions.html', context)
 

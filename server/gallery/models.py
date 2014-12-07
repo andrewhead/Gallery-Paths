@@ -3,6 +3,7 @@
 
 from __future__ import unicode_literals
 from django.db import models
+from django.contrib.auth.models import User
 from time import strftime
 
 
@@ -28,6 +29,7 @@ class Sighting(models.Model):
 
 class Exhibition(models.Model):
     ''' Collection of works displayed for a period of time. '''
+    user = models.ForeignKey(User)
     name = models.CharField(max_length=255)
     start = models.DateField(auto_now_add=True)
     end = models.DateField(default=None, blank=True, null=True)
@@ -35,6 +37,7 @@ class Exhibition(models.Model):
 
 class Exhibit(models.Model):
     ''' Work of art in a gallery. '''
+    user = models.ForeignKey(User)
     name = models.CharField(max_length=255)
     exhibition = models.ForeignKey(Exhibition)
     location_id = models.PositiveSmallIntegerField()
