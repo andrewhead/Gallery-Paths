@@ -27,6 +27,7 @@
   - libopencv-dev
   - python-pip
   - supervisor
+  - python-dev
   sudo: true
 
 - name: Install Python dependencies
@@ -48,6 +49,17 @@
 - name: Build WiringPi
   command: ./build chdir={{ tmp }}/WiringPi
   sudo: true
+
+- name: Get zbar
+  git: repo=https://github.com/npinchot/zbar.git dest={{ tmp }}/zbar
+  tags:
+  - zbar
+
+- name: Build zbar
+  command: python setup.py install chdir={{ tmp }}/zbar
+  sudo: true
+  tags:
+  - zbar
 
 - name: Configure modules for GPIO and camera at same time
   copy: src=modules dest=/etc/modules
@@ -84,7 +96,7 @@
   - upload
 
 - name: Configure supervisor
-  copy: src=supervisor.conf dest=/etc/supervisor/conf.d/observe.conf
+  template: src=supervisor.j2 dest=/etc/supervisor/conf.d/observe.conf
   sudo: true
 
 - debug: Your Observer is ready. Reboot the board.
