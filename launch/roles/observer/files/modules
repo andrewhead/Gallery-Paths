@@ -1,0 +1,13 @@
+# /etc/modules: kernel modules to load at boot time.
+#
+# This file contains the names of kernel modules that should be loaded
+# at boot time, one per line. Lines beginning with "#" are ignored.
+# Parameters can be specified after the module name.
+
+# w1-therm
+# w1-gpio pullup=1
+i2c-dev
+i2c-bcm2078
+spi-bcm2708
+snd-bcm2835
+bcm2708_wdog

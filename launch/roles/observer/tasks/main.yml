@@ -1,4 +1,10 @@
 ---
+- name: Make space
+  file: state=absent dest={{ item }}
+  with_items:
+  - /opt/Wolfram
+  sudo: true
+
 - name: Make directories
   file: state=directory dest={{ item }} owner={{ ansible_ssh_user }}
   with_items:
@@ -6,6 +12,7 @@
   - "{{ src }}"
   - "{{ datadir }}"
   - /var/log/gallery/
+  - "{{ tmp }}"
   sudo: true
 
 - name: Install Build dependencies
@@ -16,17 +23,39 @@
   - libzbar0
   - zbar-tools
   - libzbar-dev
+  - python-opencv
+  - libopencv-dev
   - python-pip
+  - supervisor
   sudo: true
 
 - name: Install Python dependencies
-  pip: name=requests
+  pip: name={{ item }}
   sudo: true
+  with_items:
+  - requests
+  - picamera
+  - futures
 
 - name: Fetch source
   git: repo=https://github.com/andrewhead/Gallery-Paths.git dest={{ src }}
   tags:
   - code
+
+- name: Get WiringPi for GPIO
+  git: repo=https://github.com/WiringPi/WiringPi dest={{ tmp }}/WiringPi
+
+- name: Build WiringPi
+  command: ./build chdir={{ tmp }}/WiringPi
+  sudo: true
+
+- name: Configure modules for GPIO and camera at same time
+  copy: src=modules dest=/etc/modules
+  sudo: true
+
+- name: Copy module blacklist
+  copy: src=raspi-blacklist.conf dest=/etc/modprobe.d/raspi-blacklist.conf
+  sudo: true
 
 - name: Copy default observer configuration
   copy: src=observer.conf dest=/etc/observer.conf
@@ -40,11 +69,6 @@
   copy: src=wpa_supplicant.conf dest=/etc/wpa_supplicant/wpa_supplicant.conf backup=yes
   sudo: true
 
-- name: Compile QR reader
-  command: g++ -lzbar -lpng read_qr.cpp -o read_qr
-  args:
-    chdir: "{{ src }}/observer"
-
 - name: Enable camera
   lineinfile: dest=/boot/config.txt line="start_x=1"
   sudo: true
@@ -53,13 +77,14 @@
   cron: name="network reboot" minute="*/10" job="{{ src }}/observer/./network_reboot.sh" user="root"
   sudo: true
 
-- name: Schedule snapshot relaunch
-  cron: name="snapshot" minute="*/10" job="{{ snapjob }}"
+- name: Delete old cron jobs
+  cron: name={{ item }} state=absent
+  with_items:
+  - snapshot
+  - upload
 
-- name: Schedule snapshot on boot
-  cron: name="snapshot" special_time=reboot job="{{ snapjob }}"
-
-- name: Schedule event upload
-  cron: name="upload" minute="*/10" job="{{ src }}/observer/./upload.py {{ datadir }}/events.log 2>&1 >> /var/log/gallery/upload.log"
+- name: Configure supervisor
+  copy: src=supervisor.conf dest=/etc/supervisor/conf.d/observe.conf
+  sudo: true
 
 - debug: Your Observer is ready. Reboot the board.
