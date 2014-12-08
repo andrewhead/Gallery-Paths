@@ -1,5 +1,6 @@
 #! /usr/bin/env python
 
+import argparse
 import logging
 import sys
 import time
@@ -46,7 +47,7 @@ def led(index, mode):
     subprocess.call(['gpio', '-g', 'write', str(index), str(value)])
 
 
-def takePics(cls, clientId, locationId):
+def takePics(cls, rotation, clientId, locationId):
 
     netExecutor = ThreadPoolExecutor(max_workers = 3)
 
@@ -55,6 +56,7 @@ def takePics(cls, clientId, locationId):
 
         with picamera.array.PiRGBArray(camera) as stream:
 
+            camera.rotation = rotation
             if cls == 'qr':
                 camera.resolution = (1600, 900)
                 stream = picamera.array.PiYUVArray(camera)
@@ -155,9 +157,14 @@ def readConfig(configFilename):
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description="capture and process image stream")
+    parser.add_argument("mode", help="face or qr")
+    parser.add_argument("-r", help="rotation", default=0)
+    args = parser.parse_args()
+
     clientId, locationId = readConfig('/etc/observer.conf')
     logging.info("")
     logging.info("Client ID %s, Location ID %s", clientId, locationId)
     enablePin(17)
     enablePin(27)
-    takePics(sys.argv[1], clientId, locationId)
+    takePics(args.mode, args.r, clientId, locationId)
