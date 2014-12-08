@@ -58,7 +58,7 @@
   sudo: true
 
 - name: Copy default observer configuration
-  copy: src=observer.conf dest=/etc/observer.conf
+  template: src=observer.j2 dest=/etc/observer.conf
   sudo: true
 
 - name: Copy wireless configuration
