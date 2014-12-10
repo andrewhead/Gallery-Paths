@@ -1,7 +1,5 @@
 #! /usr/bin/env python
 
-#Boogle
-
 import argparse
 import logging
 import sys
@@ -20,7 +18,7 @@ import cv2
 import zbar
 
 
-API_URL = "http://gallerypaths.com/api/sighting/"
+''' Logging. '''
 logging.basicConfig(
     filename='/var/log/gallery/snap.log', 
 	level=logging.DEBUG,
@@ -28,12 +26,19 @@ logging.basicConfig(
     datefmt='%m-%d %H:%M:%S'
 )
 
+''' Configurations. '''
+LIGHTS_ENABLED = True
+DETECTION_MODE = 'qr'
+API_URL = "http://gallerypaths.com/api/sighting/"
+
 
 def camLight(mode):
+    ''' Toggle camera LED. '''
     led(27, mode)
 
 
 def detectionLight(mode):
+    ''' Toggle detection LED. '''
     led(17, mode)
 
 
@@ -42,7 +47,8 @@ def enablePin(index):
 
 
 def led(index, mode):
-    if mode == 'on':
+    ''' Set an LED on or off. '''
+    if mode == 'on' and LIGHTS_ENABLED:
         value = 1
     else:
         value = 0
@@ -50,6 +56,7 @@ def led(index, mode):
 
 
 def takePics(cls, rotation, clientId, locationId):
+    ''' Main program loop, takes pictures, processes, and uploads to server. '''
 
     netExecutor = ThreadPoolExecutor(max_workers = 3)
 
@@ -61,6 +68,8 @@ def takePics(cls, rotation, clientId, locationId):
             camera.rotation = rotation
             if cls == 'qr':
                 camera.resolution = (1600, 900)
+                camera.contrast = 50
+                camera.brightness = 70
                 stream = picamera.array.PiYUVArray(camera)
                 format = 'yuv'
             elif cls == 'face':
@@ -125,6 +134,7 @@ def takePics(cls, rotation, clientId, locationId):
 
 
 def upload(dt, cId, lId, vId, tl, bl, br):
+    ''' Upload detection event to server. '''
     try:
         visitorId = int(vId)
     except:
@@ -160,7 +170,7 @@ def readConfig(configFilename):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="capture and process image stream")
-    parser.add_argument("mode", help="face or qr")
+    parser.add_argument("mode", help="face or qr")  # for now, we ignore this option
     parser.add_argument("-r", help="rotation", default=0)
     args = parser.parse_args()
 
@@ -169,4 +179,4 @@ if __name__ == '__main__':
     logging.info("Client ID %s, Location ID %s", clientId, locationId)
     enablePin(17)
     enablePin(27)
-    takePics(args.mode, args.r, clientId, locationId)
+    takePics(DETECTION_MODE, args.r, clientId, locationId)
