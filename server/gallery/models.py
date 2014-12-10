@@ -25,6 +25,7 @@ class Sighting(models.Model):
     y2 = models.IntegerField()
     x3 = models.IntegerField()
     y3 = models.IntegerField()
+    upload_time = models.DateTimeField(auto_now_add=True)
 
 
 class Exhibition(models.Model):
