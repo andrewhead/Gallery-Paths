@@ -2,38 +2,64 @@
 {% block head %}
     {% load staticfiles %}
     <title>[Astute] Gallery Analytics</title>
+    <script type="text/javascript" src="https://code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
     <script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
     <script type="text/javascript" src="{% static "gallery/js/analytics.js" %}"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css">
     <script type="text/javascript">
-        window.dwellTimeData = {{ dwellings|safe }};
-        window.sightings = {{ sightings|safe }};
+        window.timeByDay = {{ timeByDay|safe }};
+        window.trendTimes = {{ trendTimes|safe }};
+        window.exhibitImages = {{ exhibitImages|safe }};
+        window.exhibitNames = {{ exhibitNames|safe }};
+        window.detectionWidths = {{ detectionWidths|safe }};
     </script>
 {% endblock %}
+
+{% block header %}
+    <h1>My Analytics</h1>
+    <p>What is trending in your gallery?</p>
+{% endblock %}
+
 {% block content %}
-    <header id="main-header-home">
-        <div class="container">
-            <h1>Your Analytics</h1>
-            <p>Welcome back!</p>
-        </div>
-    </header>
     <section id="graphs">
         <div class="container">
+            <div id="tabs">
+                <ul>
+                    <li><a href="#summary-tab">Summary</a></li>
+                    <li><a href="#trend_tab">Recent Trends</a></li>
+                    <li><a href="#vantage_tab">Vantage Points</a></li>
+                </ul>   
+                <div id="summary-tab" class="tab chart">
+                    <div class="chart chart_cont">
+                        <h4>Recent Traffic</h4>
+                        <div id="traffic_chart"></div>
+                    </div>
+                    <div class="chart_cont">
+                        <h4>Viewpoints</h4>
+                        <div id="viewpoint_chart"></div>
+                    </div>
+                    <div class="cols chart_cont" id="trend_mini_cont">
+                        <h4>Trending</h4>
+                        <div class="col chart" style="float: left; width: 33%;">
+                           <h6>Last Day</h6>
+                           <div class="trend_mini_chart" id="day_trend_chart"></div>
+                        </div>
+                        <div class="col chart" style="float: left; width: 33%;">
+                           <h6>Last Week</h6>
+                           <div class="trend_mini_chart" id="week_trend_chart"></div>
+                        </div>
+                        <div class="col chart" style="float: left; width: 33%;">
+                           <h6>All Time</h6>
+                           <div class="trend_mini_chart" id="all_time_trend_chart"></div>
+                        </div>
+                    </div>
+                </div>
+                <div id="trend_tab" class="tab">
+                </div>
+                <div id="vantage_tab" class="tab">
+                </div>
+            </div>
             <article class="cf">
-            <div class="graph_div">
-                <h3>Dwellings</h3>
-                <div id="dwell_chart"></div>
-                <p>Number of visits, by piece.</p>
-            </div>
-            <div class="graph_div">
-                <h3>User Mapping</h3>
-                <div id="bundle_chart"></div>
-                <p>Paths through your gallery.</p>
-            </div>
-            <div class="graph_div">
-                <h3>Time Spent Per Dwelling</h3>
-                <div id="time_chart"></div>
-                <p>Average time spent, by piece.</p>
-            </div>
         </article>
         </div>
     </section>

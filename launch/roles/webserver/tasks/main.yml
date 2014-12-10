@@ -25,6 +25,10 @@
   file: state=directory path={{ mediadir }} owner=ubuntu
   sudo: true
 
+- name: Create updates director
+  file: state=directory path={{ updatesdir }} owner=ubuntu
+  sudo: true
+
 - name: Create static files directory
   file: state=directory path={{ staticdir }} owner=ubuntu
 
@@ -92,6 +96,14 @@
   with_items:
   - present
   - restarted
+  sudo: true
+
+- name: Install auto-update script
+  copy: src=update dest=/etc/init.d/update mode=0755
+  sudo: true
+
+- name: Add to auto-boot process
+  command: rc-update.d update defaults chdir=/etc/init.d
   sudo: true
 
 - name: Restart nginx

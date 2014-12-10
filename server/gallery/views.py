@@ -7,10 +7,13 @@ from django.template.response import TemplateResponse
 from django.core import serializers
 from django.contrib.auth.decorators import login_required
 from django.db import connection
+from django.db.models import Count
 from django.http import HttpResponseRedirect
+
 import json
 import jsonpickle
 import datetime
+from collections import defaultdict
 
 from forms import ExhibitionForm, ExhibitForm
 from models import Sighting, Exhibition, Exhibit
@@ -19,6 +22,10 @@ from models import Sighting, Exhibition, Exhibit
 def index(request):
     context = {}
     return render(request, 'gallery/index.html')
+
+
+def serialize(data):
+    return jsonpickle.encode(data, unpicklable=False)
 
 
 @login_required
@@ -110,29 +117,94 @@ def exhibitions(request):
 @login_required
 def analytics(request):
 
-    ''' Count dwellings per exhibit. '''
-    cursor = connection.cursor()
-    cursor.execute("SET @last='';")
-    cursor.execute("""
-        SELECT last_location, COUNT(last_location) FROM (
-            SELECT id,@last AS last_location,@last:=location_id AS this_location 
-            FROM gallery_sighting 
-            HAVING last_location != this_location) 
-        AS sub GROUP BY last_location;
-    """)
-    dwellCounts = dict([(str(i[0]), int(i[1])) for i in cursor.fetchall()])
-    cursor.close()
+    ''' Fetch exhibition and date bounds. '''
+    exhibition = Exhibition.objects.get(
+        user=request.user,
+        id=request.GET.get('exhibition', -1)
+    )
+    start = exhibition.start
+    end = exhibition.end or datetime.datetime.utcnow().date()
+    exhibitIds = [e.location_id for e in Exhibit.objects.filter(exhibition=exhibition)]
 
-    ''' Get all sightings for map. '''
-    sightings = list(Sighting.objects.all().values('visitor_id', 'location_id', 'time'))
-    for s in sightings:
-        s['visitor'] = s.pop('visitor_id')
-        s['location'] = s.pop('location_id')
-        s['tripIndex'] = 1
+    ''' Get base sightings with blacklisted values omitted. '''
+    baseSightings = Sighting.objects.filter(
+            client_id=request.user.id,
+            location_id__in=exhibitIds
+        ).exclude(location_id__in=[1111])
+
+    ''' Get total event counts grouped by date. '''
+    exhibitionSightings = baseSightings.filter(
+        time__gte=start,
+        time__lte=end + datetime.timedelta(days=1),  # add 1 day so we can get last day of exhibit
+        )
+    timesPerDate = list(exhibitionSightings
+        .extra({'date': 'date(time)'})
+        .values('date')
+        .annotate(sighting_count=Count('id')))
+
+    ''' Get events per exhibit at day, week, and month level. '''
+    clientSightings = baseSightings.filter(
+        time__lte=end + datetime.timedelta(days=1)
+    )
+    exhibitTimes = {}
+    locationIds = set()
+    timeGroups = {
+        'day': max(exhibition.start, end),
+        'week': max(exhibition.start, end - datetime.timedelta(days=7)),
+        'all_time': exhibition.start,
+    }
+    for tg in timeGroups.keys():
+        times = list(clientSightings
+            .filter(time__gte=timeGroups[tg])
+            .values('location_id')
+            .annotate(totalTime=Count('location_id'))
+            .order_by('-totalTime'))
+        locationIds = locationIds.union([t['location_id'] for t in times])
+        exhibitTimes[tg] = times
+
+    ''' Compute bins of face widths for each location. '''
+    locationDetectionWidths = Sighting.objects.raw('''
+        SELECT id, location_id, wb, c FROM (
+            SELECT id, ROUND((x3 - x1) / 10) AS wb, time, location_id, client_id, COUNT(*) AS c
+            FROM gallery_sighting
+            GROUP BY location_id, wb
+            ORDER BY wb ASC
+        ) AS temp 
+        WHERE wb >= 0 AND 
+            time >= '{start}' AND 
+            time <= '{end}' AND 
+            client_id = {clientId} AND 
+            location_id IN ({locationList});
+    '''.format(
+        start=start.strftime("%Y%m%d"),
+        end=end.strftime("%Y%m%d"),
+        clientId=request.user.id,
+        locationList=','.join([str(id_) for id_ in exhibitIds])
+    ))
+    widthBins = list(set(map(lambda ldw: ldw.wb, locationDetectionWidths)))
+    widthBins = range(0, max(widthBins) + 1)
+    detectionWidths = defaultdict(lambda: [0] * len(widthBins))
+    for ldw in locationDetectionWidths:
+        detectionWidths[ldw.location_id][int(ldw.wb)] = ldw.c
+    detectionWidths = dict(detectionWidths)
+
+    ''' Get thumbnails of all of the images to show. '''
+    exhibitImages = {}
+    exhibitNames = {}
+    for l in locationIds:
+        try:
+            exhibit = Exhibit.objects.get(location_id=l, exhibition=exhibition)
+        except Exhibit.DoesNotExist:
+            continue
+        exhibitImages[l] = '/media/' + exhibit.image.name
+        exhibitNames[l] = exhibit.name
 
     context = {
-        'dwellings': dwellCounts,
-        'sightings': jsonpickle.encode(sightings, unpicklable=False),
+        'timeByDay': serialize(timesPerDate),
+        'trendTimes': serialize(exhibitTimes),
+        'exhibitImages': serialize(exhibitImages),
+        'exhibitNames': serialize(exhibitNames),
+        'detectionWidths': serialize(detectionWidths),
     }
     return render(request, 'gallery/analytics.html', context)
 

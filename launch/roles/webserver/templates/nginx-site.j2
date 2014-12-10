@@ -8,6 +8,10 @@ server {
 
     keepalive_timeout 5;
  
+    location /updates/ {
+        alias {{ updatesdir }}/;
+    }
+
     location /static/ {
         alias {{ projectdir }}/static/;
     }

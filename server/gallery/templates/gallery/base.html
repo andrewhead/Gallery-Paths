@@ -23,12 +23,17 @@
     </head>
     <body>
         <div class="banner">
+            <header id="main-header">
+                <div class="container">
+                    {% block header %}
+                    {% endblock %}
+                </div>
+            </header>
             <p id="hidden_left"></p>
-            <p class="header">Astute</p>
             {% if user.is_anonymous %}
             <p class="loginout"><a href="/accounts/login">Log In</a></p>
             {% else %}
-            <p class="loginout"><a href="/accounts/logout">Log Out</a></p>
+            <p class="loginout">Welcome, {{ user }}!&nbsp;&nbsp;&nbsp;<a href="/accounts/logout">Log Out</a></p>
             {% endif %}
         </div>
         {% block content %}

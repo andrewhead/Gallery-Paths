@@ -3,10 +3,13 @@
     {% load staticfiles %}
     <title>My Exhibitions</title>
 {% endblock %}
+
+{% block header %}
+    <h1>My Exhibitions</h1>
+    <p>Prepare your gallery space</p>
+{% endblock %}
+
 {% block content %}
-    <header id="header">
-        <h3>Open Exhibitions</h3>
-    </header>
     <div class="container">
         <table style="width: 100%;">
             <thead>

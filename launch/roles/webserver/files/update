@@ -1,0 +1,34 @@
+#!/bin/sh -e
+### BEGIN INIT INFO
+# Provides:          update
+# Required-Start:    networking
+# Required-Stop:     
+# Default-Start:     S
+# Default-Stop:      0 6
+# Short-Description: Update detection code
+# Description:       Fetches detection code from online location if possible.
+### END INIT INFO
+
+PATH="/usr/bin:/sbin:/bin"
+
+DEST=/usr/local/gallery/src/observer/
+SRC=http://www.gallerypaths.com/updates/capture.py
+
+case "$1" in
+start|reload|force-reload|restart)
+	echo 'Updating Gallery Paths code'
+	cd $DEST
+	wget -N $SRC
+	chown pi:staff capture.py
+	chmod +x capture.py
+	echo 'Updated.'
+	;;
+
+stop)
+	;;
+
+esac
+
+exit 0
+
+# vim: noet ts=8

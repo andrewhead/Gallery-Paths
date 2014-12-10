@@ -76,7 +76,8 @@ div.new {
 .banner {
   overflow: auto;
   border: 2px dashed green;
-  padding: 10px;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
 }
 
 .banner #hidden_left {
@@ -93,8 +94,21 @@ div.new {
 
 .banner p.loginout {
   float: right;
-  width: 20%;
+  width: 50%;
   text-align: right;
+  margin-right: 40px;
+}
+
+#tabs {
+  margin-top: 20px;
+}
+
+.tab {
+  height: 1100px;
+}
+
+#trend_mini_cont {
+  margin-top: 20px;
 }
 
 /* Content */
@@ -102,13 +116,65 @@ p.error {
   color: red;
 }
 
+/* Containers */
+.col {
+  margin-top: 0px;
+}
+
 /* Fore components */
+#traffic_chart {
+  height: 200px;
+}
+
+#viewpoint_chart {
+  height: 400px;
+}
+
+.trend_mini_chart {
+  height: 200px;
+}
+
 .graph_div {
   width: 100%;
 }
 
 #dwell_chart {
   height: 200px;
+}
+
+.axis text {
+  font-size: 12px;
+}
+
+.chart_label {
+  font-size: 16px;
+}
+
+.chart h6, .chart h4, .chart_cont h4 {
+  text-align: center;
+  font-family: sans-serif;
+  margin-bottom: 0px;
+}
+
+.chart_cont h4 {
+  margin-top: 30px;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.x.axis path {
+  display: none;
+}
+
+.line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 1.5px;
 }
 
 /* D3 Graphics */

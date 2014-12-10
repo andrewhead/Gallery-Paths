@@ -1,10 +1,12 @@
 domain: gallerypaths.com
 localport: 8000
 projectdir: /usr/local/gallery
+wwwdir: "/var/www/gallerypaths.com"
 venv: "{{ projectdir }}/venv"
 src: "{{ projectdir }}/src"
 staticdir: "{{ projectdir }}/static"
-mediadir: "/var/www/gallerypaths.com/media"
+mediadir: "{{ wwwdir }}/media"
+updatesdir: "{{ wwwdir }}/updates"
 djdir: "{{ src }}/server"
 appname: "gallery"
 scriptdir: "{{ projectdir }}/scripts"
