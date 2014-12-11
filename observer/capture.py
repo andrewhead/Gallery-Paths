@@ -27,7 +27,7 @@ logging.basicConfig(
 )
 
 ''' Configurations. '''
-LIGHTS_ENABLED = True
+LIGHTS_ENABLED = False
 DETECTION_MODE = 'qr'
 API_URL = "http://gallerypaths.com/api/sighting/"
 

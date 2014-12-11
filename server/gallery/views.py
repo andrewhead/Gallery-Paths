@@ -8,7 +8,7 @@ from django.core import serializers
 from django.contrib.auth.decorators import login_required
 from django.db import connection
 from django.db.models import Count
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 
 import json
 import jsonpickle
@@ -29,7 +29,7 @@ def serialize(data):
 
 
 @login_required
-def exhibits(request):
+def exhibits(request, xid):
 
     def _getExhibitForms(exhibition, post=False, withFiles=False):
         forms = []
@@ -46,7 +46,7 @@ def exhibits(request):
         return forms
 
     if request.method == "POST":
-        exhibition = Exhibition.objects.get(user=request.user, pk=request.POST.get('e', -1))
+        exhibition = Exhibition.objects.get(user=request.user, pk=xid)
         newForm = ExhibitForm(request.POST, request.FILES, prefix='new')
         formsToSave = []
 
@@ -70,7 +70,7 @@ def exhibits(request):
             }, context_instance=RequestContext(request))
 
     if request.method == "GET":
-        exhibition = Exhibition.objects.get(user=request.user, pk=request.GET.get('e', -1))
+        exhibition = Exhibition.objects.get(user=request.user, pk=xid)
         updateForms = _getExhibitForms(exhibition)
         newForm = ExhibitForm(prefix='new', initial={'exhibition': exhibition})
         context = {
@@ -115,13 +115,10 @@ def exhibitions(request):
 
 
 @login_required
-def analytics(request):
+def analytics(request, xid):
 
     ''' Fetch exhibition and date bounds. '''
-    exhibition = Exhibition.objects.get(
-        user=request.user,
-        id=request.GET.get('exhibition', -1)
-    )
+    exhibition = Exhibition.objects.get(user=request.user, id=xid)
     start = exhibition.start
     end = exhibition.end or datetime.datetime.utcnow().date()
     exhibitIds = [e.location_id for e in Exhibit.objects.filter(exhibition=exhibition)]
@@ -207,6 +204,28 @@ def analytics(request):
         'detectionWidths': serialize(detectionWidths),
     }
     return render(request, 'gallery/analytics.html', context)
+
+
+@login_required
+def exhibit(request, eid):
+
+    exhibit = Exhibit.objects.get(id=eid)
+    if exhibit.exhibition.user != request.user:
+        return HttpResponse("Unauthorized", status=401)
+
+    otherExhibits = [_ for _ in exhibit.exhibition.exhibit_set.all()]
+    exhibitIndex = otherExhibits.index(exhibit)
+    nextIndex = (exhibitIndex + 1) % len(otherExhibits)
+    prevIndex = (exhibitIndex - 1) % len(otherExhibits)
+
+    exhibitLink = lambda index: '/exhibit/' + str(otherExhibits[index].id)
+    context = {
+        'name': exhibit.name,
+        'thumbnail_url': exhibit.image.url,
+        'next': exhibitLink(nextIndex),
+        'prev': exhibitLink(prevIndex),
+    }
+    return render(request, 'gallery/exhibit.html', context)
 
 
 def events(request):

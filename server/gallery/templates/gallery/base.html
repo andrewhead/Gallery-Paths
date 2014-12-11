@@ -4,7 +4,7 @@
         {% load staticfiles %}
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="description" content="Gestalt is a UC Berkeley Student project, aiming to bring measurment to art interaction.">
+        <meta name="description" content="Astute is a UC Berkeley Student project, aiming to bring measurment to art interaction.">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="author" content="Andrew Head, Michelle Galemmo, Z Wu, Christi Gregg">
         <meta name="keywords" content="art work, art analytics, gallery measurement, sheer brilliance, cs294">
@@ -29,11 +29,18 @@
                     {% endblock %}
                 </div>
             </header>
-            <p id="hidden_left"></p>
             {% if user.is_anonymous %}
             <p class="loginout"><a href="/accounts/login">Log In</a></p>
             {% else %}
-            <p class="loginout">Welcome, {{ user }}!&nbsp;&nbsp;&nbsp;<a href="/accounts/logout">Log Out</a></p>
+            <p class="loginout">
+                Welcome, {{ user }}!&nbsp;&nbsp;&nbsp;
+                <a href="/accounts/logout">Log Out</a>&nbsp;&nbsp;&nbsp;
+            </p>
+            <p class="links">
+                <a href="/analytics">Analytics</a>&nbsp;&nbsp;&nbsp;
+                <a href="/exhibitions">Exhibitions</a>&nbsp;&nbsp;&nbsp;
+            </p>
+            <p class="hiddenright"></p>
             {% endif %}
         </div>
         {% block content %}

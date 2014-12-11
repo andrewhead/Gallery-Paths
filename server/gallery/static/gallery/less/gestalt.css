@@ -1,4 +1,69 @@
-/* Components */
+/* Containers */
+.col {
+  margin-top: 0px;
+  float: left;
+  display: block;
+}
+
+.col2 {
+  width: 50%;
+}
+
+div.centered {
+  width: 100%;
+  text-align: center;
+}
+
+div.new {
+  margin-top: 10px;
+}
+
+.banner {
+  overflow: auto;
+  border: 2px dashed green;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+}
+
+.banner #hidden_left {
+  float: left;
+  width: 20%;
+}
+
+.banner .header {
+  float: left;
+  width: 60%;
+  font-size: 32px;
+  text-align: center;
+}
+
+#tabs {
+  margin-top: 20px;
+}
+
+.tab {
+  height: 1100px;
+}
+
+#trend_mini_cont {
+  margin-top: 20px;
+}
+
+div.exhibit_line_chart {
+  width: 95%;
+  display: block;
+  margin: 0 auto;
+  height: 200px;
+}
+
+div.exhibit_vantage_chart {
+  width: 95%;
+  display: block;
+  margin: 0 auto;
+  height: 200px;
+}
+
+/* Tables */
 table {
   width: 100%;
 }
@@ -31,20 +96,8 @@ table input[type="submit"] {
   margin: auto;
 }
 
-.save_btn {
-  width: 40%;
-  display: block;
-  margin: auto;
-  margin-top: 20px;
-}
-
-img.thumbnail {
-  height: 70px;
-  display: block;
-  margin: auto;
-}
-
-from.django input[type="text"] {
+/* Forms */
+form.django input[type="text"] {
   width: 100%;
 }
 
@@ -64,62 +117,69 @@ form.django input[type="file"] {
   margin-top: 10px;
 }
 
-div.centered {
+.save_btn {
+  width: 40%;
+  display: block;
+  margin: auto;
+  margin-top: 20px;
+}
+
+img.thumbnail {
+  height: 70px;
+  display: block;
+  margin: auto;
+}
+
+.nextprev_cont {
+  width: 80%;
+  margin: auto;
+}
+
+form.nextprev_form {
+  display: block;
+  float: left;
+  width: 50%;
+}
+
+form.nextprev_form input[type="submit"] {
+  width: 40%;
+}
+
+form.nextprev_form .button_cont {
   width: 100%;
   text-align: center;
 }
 
-div.new {
-  margin-top: 10px;
-}
-
-.banner {
-  overflow: auto;
-  border: 2px dashed green;
-  padding-bottom: 10px;
-  margin-bottom: 20px;
-}
-
-.banner #hidden_left {
-  float: left;
-  width: 20%;
-}
-
-.banner .header {
-  float: left;
-  width: 60%;
-  font-size: 32px;
-  text-align: center;
-}
-
-.banner p.loginout {
-  float: right;
-  width: 50%;
-  text-align: right;
-  margin-right: 40px;
-}
-
-#tabs {
-  margin-top: 20px;
-}
-
-.tab {
-  height: 1100px;
-}
-
-#trend_mini_cont {
-  margin-top: 20px;
-}
-
 /* Content */
+img.exhibit_img {
+  width: 90%;
+  display: block;
+  margin: 0 auto;
+}
+
 p.error {
   color: red;
 }
 
-/* Containers */
-.col {
-  margin-top: 0px;
+p.links {
+  width: 60%;
+  float: left;
+  text-align: center;
 }
+
+p.hiddenright {
+  width: 10%;
+  float: left;
+  margin-right: 40px;
+}
+
+p.loginout {
+  float: left;
+  width: 20%;
+  text-align: left;
+  margin-left: 40px;
+}
+
 
 /* Fore components */
 #traffic_chart {

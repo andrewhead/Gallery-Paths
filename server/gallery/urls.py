@@ -14,13 +14,16 @@ sightingResource = SightingResource()
 urlpatterns = patterns('',
     url(r'^index$', views.index),
     url(r'^$', views.index),
-    url(r'^analytics$', views.analytics),
+
     url(r'^exhibitions$', views.exhibitions),
-    url(r'^exhibits$', views.exhibits),
+    url(r'^exhibition/(?P<xid>\d+)/exhibits$', views.exhibits),
+    url(r'^exhibit/(?P<eid>\d+)/$', views.exhibit),
+    url(r'^exhibition/(?P<xid>\d+)/analytics/$', views.analytics),
+    url(r'^accounts/', include('registration.backends.simple.urls')),
+
     url(r'^events$', views.events),
     url(r'^api/', include(sightingResource.urls)),
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^accounts/', include('registration.backends.simple.urls')),
 )
 
 ''' Serve media files via Django if we are in DEBUG mode. '''

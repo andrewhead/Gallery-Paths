@@ -27,8 +27,7 @@
                     <td>{{ e.name }}</td>
                     <td>{{ e.start }}</td>
                     <td class="centered">
-                        <form action="analytics" method="GET">
-                            <input type="hidden" name="exhibition" value={{ e.id }}></input>
+                        <form action="exhibition/{{ e.id }}/analytics/" method="GET">
                             <input class="view_btn" type="submit" value="View"></input>
                         </form>
                     </td>
@@ -76,8 +75,7 @@
                     <td>{{ e.start }}</td>
                     <td>{{ e.end }}</td>
                     <td class="centered">
-                        <form action="analytics" method="GET">
-                            <input type="hidden" name="exhibition" value={{ e.id }}></input>
+                        <form action="exhibition/{{ e.id }}/analytics/" method="GET">
                             <input class="view_btn" type="submit" value="View"></input>
                         </form>
                     </td>
