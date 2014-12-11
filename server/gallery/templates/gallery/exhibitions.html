@@ -10,6 +10,9 @@
 {% endblock %}
 
 {% block content %}
+    <header id="header">
+        <h3>Open Exhibitions</h3>
+    </header>
     <div class="container">
         <table style="width: 100%;">
             <thead>
@@ -46,7 +49,7 @@
         </table>
         <form action="exhibitions" method="POST" class="django">
             {% csrf_token %}
-            <div class="new centered"> 
+            <div class="new_cont centered"> 
                 <p>Starting Something New?</p>
                 {{ newForm.name }}
                 <input type="hidden" name="action" value="open"></input>

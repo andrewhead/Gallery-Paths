@@ -17,6 +17,7 @@ from collections import defaultdict
 
 from forms import ExhibitionForm, ExhibitForm
 from models import Sighting, Exhibition, Exhibit
+from lookup import getExhibitionTimeBounds, getTimesPerDate, getExhibitImages, getDetectionWidths
 
 
 def index(request):
@@ -119,8 +120,7 @@ def analytics(request, xid):
 
     ''' Fetch exhibition and date bounds. '''
     exhibition = Exhibition.objects.get(user=request.user, id=xid)
-    start = exhibition.start
-    end = exhibition.end or datetime.datetime.utcnow().date()
+    start, end = getExhibitionTimeBounds(exhibition)
     exhibitIds = [e.location_id for e in Exhibit.objects.filter(exhibition=exhibition)]
 
     ''' Get base sightings with blacklisted values omitted. '''
@@ -130,14 +130,7 @@ def analytics(request, xid):
         ).exclude(location_id__in=[1111])
 
     ''' Get total event counts grouped by date. '''
-    exhibitionSightings = baseSightings.filter(
-        time__gte=start,
-        time__lte=end + datetime.timedelta(days=1),  # add 1 day so we can get last day of exhibit
-        )
-    timesPerDate = list(exhibitionSightings
-        .extra({'date': 'date(time)'})
-        .values('date')
-        .annotate(sighting_count=Count('id')))
+    timesPerDate = getTimesPerDate(request.user.id, exhibition, exhibitIds, start, end)
 
     ''' Get events per exhibit at day, week, and month level. '''
     clientSightings = baseSightings.filter(
@@ -160,47 +153,15 @@ def analytics(request, xid):
         exhibitTimes[tg] = times
 
     ''' Compute bins of face widths for each location. '''
-    locationDetectionWidths = Sighting.objects.raw('''
-        SELECT id, location_id, wb, c FROM (
-            SELECT id, ROUND((x3 - x1) / 10) AS wb, time, location_id, client_id, COUNT(*) AS c
-            FROM gallery_sighting
-            GROUP BY location_id, wb
-            ORDER BY wb ASC
-        ) AS temp 
-        WHERE wb >= 0 AND 
-            time >= '{start}' AND 
-            time <= '{end}' AND 
-            client_id = {clientId} AND 
-            location_id IN ({locationList});
-    '''.format(
-        start=start.strftime("%Y%m%d"),
-        end=end.strftime("%Y%m%d"),
-        clientId=request.user.id,
-        locationList=','.join([str(id_) for id_ in exhibitIds])
-    ))
-    widthBins = list(set(map(lambda ldw: ldw.wb, locationDetectionWidths)))
-    widthBins = range(0, max(widthBins) + 1)
-    detectionWidths = defaultdict(lambda: [0] * len(widthBins))
-    for ldw in locationDetectionWidths:
-        detectionWidths[ldw.location_id][int(ldw.wb)] = ldw.c
-    detectionWidths = dict(detectionWidths)
+    detectionWidths = getDetectionWidths(request.user.id, exhibitIds, start, end)
 
     ''' Get thumbnails of all of the images to show. '''
-    exhibitImages = {}
-    exhibitNames = {}
-    for l in locationIds:
-        try:
-            exhibit = Exhibit.objects.get(location_id=l, exhibition=exhibition)
-        except Exhibit.DoesNotExist:
-            continue
-        exhibitImages[l] = '/media/' + exhibit.image.name
-        exhibitNames[l] = exhibit.name
+    exhibitImages = getExhibitImages(exhibition, exhibitIds)
 
     context = {
         'timeByDay': serialize(timesPerDate),
         'trendTimes': serialize(exhibitTimes),
         'exhibitImages': serialize(exhibitImages),
-        'exhibitNames': serialize(exhibitNames),
         'detectionWidths': serialize(detectionWidths),
     }
     return render(request, 'gallery/analytics.html', context)
@@ -210,13 +171,20 @@ def analytics(request, xid):
 def exhibit(request, eid):
 
     exhibit = Exhibit.objects.get(id=eid)
-    if exhibit.exhibition.user != request.user:
+    locationId = exhibit.location_id
+    exhibition = exhibit.exhibition
+    if exhibition.user != request.user:
         return HttpResponse("Unauthorized", status=401)
 
-    otherExhibits = [_ for _ in exhibit.exhibition.exhibit_set.all()]
+    otherExhibits = [_ for _ in exhibition.exhibit_set.all()]
     exhibitIndex = otherExhibits.index(exhibit)
     nextIndex = (exhibitIndex + 1) % len(otherExhibits)
     prevIndex = (exhibitIndex - 1) % len(otherExhibits)
+
+    ''' Fetch analytics. '''
+    start, end = getExhibitionTimeBounds(exhibit.exhibition)
+    timesPerDate = getTimesPerDate(request.user.id, exhibition, [locationId], start, end)
+    detectionWidths = getDetectionWidths(request.user.id, [locationId], start, end)
 
     exhibitLink = lambda index: '/exhibit/' + str(otherExhibits[index].id)
     context = {
@@ -224,6 +192,9 @@ def exhibit(request, eid):
         'thumbnail_url': exhibit.image.url,
         'next': exhibitLink(nextIndex),
         'prev': exhibitLink(prevIndex),
+        'timesPerDate': serialize(timesPerDate),
+        'exhibitImages': serialize(getExhibitImages(exhibition, [locationId])),
+        'detectionWidths': serialize(detectionWidths),
     }
     return render(request, 'gallery/exhibit.html', context)
 

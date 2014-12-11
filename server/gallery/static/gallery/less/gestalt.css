@@ -1,4 +1,12 @@
 /* Containers */
+body {
+  padding-bottom: 80px;
+}
+
+.cols {
+  width: 100%;
+}
+
 .col {
   margin-top: 0px;
   float: left;
@@ -7,6 +15,10 @@
 
 .col2 {
   width: 50%;
+}
+
+#exhibit_chart_col {
+  margin-top: 10px;
 }
 
 div.centered {
@@ -39,28 +51,34 @@ div.new {
 
 #tabs {
   margin-top: 20px;
+  margin-bottom: 40px;
 }
 
 .tab {
-  height: 1100px;
+  height: 400px;
+}
+
+#tabs li {
+  font-size: 14px;
+  font-family: sans-serif;
 }
 
 #trend_mini_cont {
   margin-top: 20px;
 }
 
-div.exhibit_line_chart {
+div#exhibit_line_chart {
   width: 95%;
   display: block;
   margin: 0 auto;
   height: 200px;
 }
 
-div.exhibit_vantage_chart {
+div#exhibit_vantage_chart {
   width: 95%;
   display: block;
   margin: 0 auto;
-  height: 200px;
+  height: 120px;
 }
 
 /* Tables */
@@ -98,7 +116,7 @@ table input[type="submit"] {
 
 /* Forms */
 form.django input[type="text"] {
-  width: 100%;
+  width: 30%;
 }
 
 form.django input[type="number"] {
@@ -131,8 +149,10 @@ img.thumbnail {
 }
 
 .nextprev_cont {
+  clear: both;
   width: 80%;
   margin: auto;
+  padding-top: 20px;
 }
 
 form.nextprev_form {
@@ -183,11 +203,11 @@ p.loginout {
 
 /* Fore components */
 #traffic_chart {
-  height: 200px;
+  height: 300px;
 }
 
 #viewpoint_chart {
-  height: 400px;
+  height: 300px;
 }
 
 .trend_mini_chart {

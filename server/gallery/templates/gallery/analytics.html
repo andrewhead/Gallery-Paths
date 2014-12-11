@@ -13,7 +13,6 @@
         window.timeByDay = {{ timeByDay|safe }};
         window.trendTimes = {{ trendTimes|safe }};
         window.exhibitImages = {{ exhibitImages|safe }};
-        window.exhibitNames = {{ exhibitNames|safe }};
         window.detectionWidths = {{ detectionWidths|safe }};
     </script>
 {% endblock %}
@@ -26,21 +25,20 @@
 {% block content %}
     <section id="graphs">
         <div class="container">
+        <article class="cf">
             <div id="tabs">
                 <ul>
-                    <li><a href="#summary-tab">Summary</a></li>
+                    <li><a href="#summary_tab">Summary</a></li>
                     <li><a href="#trend_tab">Recent Trends</a></li>
                     <li><a href="#vantage_tab">Vantage Points</a></li>
                 </ul>   
-                <div id="summary-tab" class="tab chart">
+                <div id="summary_tab" class="tab chart">
                     <div class="chart chart_cont">
                         <h4>Recent Traffic</h4>
                         <div id="traffic_chart"></div>
                     </div>
-                    <div class="chart_cont">
-                        <h4>Viewpoints</h4>
-                        <div id="viewpoint_chart"></div>
-                    </div>
+                </div>
+                <div id="trend_tab" class="tab">
                     <div class="cols chart_cont" id="trend_mini_cont">
                         <h4>Trending</h4>
                         <div class="col chart" style="float: left; width: 33%;">
@@ -57,12 +55,13 @@
                         </div>
                     </div>
                 </div>
-                <div id="trend_tab" class="tab">
-                </div>
                 <div id="vantage_tab" class="tab">
+                    <div class="chart_cont">
+                        <h4>Viewpoints</h4>
+                        <div id="viewpoint_chart"></div>
+                    </div>
                 </div>
             </div>
-            <article class="cf">
         </article>
         </div>
     </section>

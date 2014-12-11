@@ -6,8 +6,11 @@
     <script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
     <script type="text/javascript" src="{% static "gallery/js/graphs.js" %}"></script>
     <script type="text/javascript" src="{% static "gallery/js/exhibit.js" %}"></script>
-    <script>window.timeByDay = {{ timeByDay|safe }};</script>
-    <script>window.detectionWidths = {{ detectionWidths|safe }};</script>
+    <script>
+        window.timesPerDate = {{ timesPerDate|safe }};
+        window.detectionWidths = {{ detectionWidths|safe }};
+        window.exhibitImages = {{ exhibitImages|safe }};
+    </script>
 {% endblock %}
 
 {% block header %}
@@ -36,9 +39,15 @@
             </header>
             <img class="exhibit_img" src={{ thumbnail_url }}></img>
         </div>
-        <div class="col col2">
-            <div id="exhibit_line_chart"></div>
-            <div id="exhibit_vantage_chart"><div>
+        <div class="col col2" id="exhibit_chart_col">
+            <div class="chart">
+                <h4>Viewing Time by Date</h4>
+                <div id="exhibit_line_chart"></div>
+            </div>
+            <div class="chart">
+                <h4>Viewing Distances</h4>
+                <div id="exhibit_vantage_chart"></div>
+            </div>
         </div>
     </div>
     <div class="nextprev_cont">

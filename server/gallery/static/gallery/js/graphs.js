@@ -8,7 +8,6 @@ function buildHeatmap(divSelector, data, exhibitImages) {
         }
         return sum(a.value) - (b.value);
     });
-    console.log(data);
     if (data.length === 0) {
         return;
     }
@@ -22,7 +21,7 @@ function buildHeatmap(divSelector, data, exhibitImages) {
     var legend = {
         w: 480,
         h: 10,
-        m: {top: 20, right: 10, bottom: 0}
+        m: {top: 30, right: 10, bottom: 20}
     }
     var thumbnailWidth = 40;
 
@@ -55,6 +54,7 @@ function buildHeatmap(divSelector, data, exhibitImages) {
         legendTimes.push(legendTime);
         legendTime *= 10;
     }
+    legendTimes.push(legendTime);
     var legXScale = d3.scale.ordinal()
         .domain(legendTimes)
         .rangeRoundBands([0, legend.w], 0.01);
@@ -84,17 +84,19 @@ function buildHeatmap(divSelector, data, exhibitImages) {
         .text(function(d) { return d; });
 
     legend_g.append("text")
-        .text("Seconds per work")
+        .text("Seconds viewed")
         .attr("x", legend.w / 2)
         .attr("y", -10)
         .attr("text-anchor", "middle")
         .attr("class", "chart_label");
 
-    var lines = svg.selectAll("g")
+    var lines = svg.append("g")
+        .selectAll("g")
         .data(data)
         .enter()
         .append("g")
         .attr("transform", function(d, i) {
+            console.log(d.key);
             return "translate(0," + yScale(d.key) + ")";
         });
 
