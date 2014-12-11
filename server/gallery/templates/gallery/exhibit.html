@@ -20,19 +20,7 @@
 
 {% block content %}
 <div class="container">
-    <div class="nextprev_cont">
-        <form class="nextprev_form" action={{ prev }} method="GET">
-            <div class="button_cont">
-                <input type="submit" value="Previous"></input>
-            </div>
-        </form>
-        <form class="nextprev_form" action={{ next }} method="GET">
-            <div class="button_cont">
-                <input type="submit" value="Next"></input>
-            </div>
-        </form>
-    </div>
-    <div class="cols">
+    <div id="exhibit_cont" class="cols">
         <div class="col col2">
             <header>
                 <h3>{{ name }}</h3>
@@ -40,23 +28,23 @@
             <img class="exhibit_img" src={{ thumbnail_url }}></img>
         </div>
         <div class="col col2" id="exhibit_chart_col">
-            <div class="chart">
+            <div class="chart_cont">
                 <h4>Viewing Time by Date</h4>
-                <div id="exhibit_line_chart"></div>
+                <div class="chart" id="exhibit_line_chart"></div>
             </div>
-            <div class="chart">
+            <div class="chart_cont">
                 <h4>Viewing Distances</h4>
-                <div id="exhibit_vantage_chart"></div>
+                <div class="chart" id="exhibit_vantage_chart"></div>
             </div>
         </div>
     </div>
     <div class="nextprev_cont">
-        <form class="nextprev_form" action={{ prev }} method="GET">
+        <form class="nextprev_form" action="{{ prev }}#exhibit_cont" method="GET">
             <div class="button_cont">
                 <input type="submit" value="Previous"></input>
             </div>
         </form>
-        <form class="nextprev_form" action={{ next }} method="GET">
+        <form class="nextprev_form" action="{{ next }}#exhibit_cont" method="GET">
             <div class="button_cont">
                 <input type="submit" value="Next"></input>
             </div>

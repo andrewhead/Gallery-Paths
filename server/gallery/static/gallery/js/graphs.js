@@ -8,9 +8,6 @@ function buildHeatmap(divSelector, data, exhibitImages) {
         }
         return sum(a.value) - (b.value);
     });
-    if (data.length === 0) {
-        return;
-    }
 
     var margin = {top: 10, bottom: 10, right: 10, left: 30};
     var chartDiv = d3.select(divSelector);
@@ -24,6 +21,19 @@ function buildHeatmap(divSelector, data, exhibitImages) {
         m: {top: 30, right: 10, bottom: 20}
     }
     var thumbnailWidth = 40;
+
+    if (data.length === 0) {
+        chartDiv.append("svg")
+            .style("width", divW)
+            .style("height", divH)
+          .append("text")
+            .attr("text-anchor", "middle")
+            .text("No data")
+            .attr("class", "chart_label")
+            .attr("x", divW / 2)
+            .attr("y", divH / 2);
+        return;
+    }
 
     var svg = chartDiv.append("svg")
         .style("width", divW)
@@ -96,7 +106,6 @@ function buildHeatmap(divSelector, data, exhibitImages) {
         .enter()
         .append("g")
         .attr("transform", function(d, i) {
-            console.log(d.key);
             return "translate(0," + yScale(d.key) + ")";
         });
 
@@ -110,7 +119,8 @@ function buildHeatmap(divSelector, data, exhibitImages) {
         .attr("height", yScale.rangeBand())
         .attr("fill", function(d) { return colorScale(d); });
      
-    var thumbnails = lines
+    var thumbnails = lines.append("a")
+        .attr("xlink:href", function(d) { return "/exhibit/" + d.key + "#exhibit_cont"; })
         .append("image")
         .attr("xlink:href", function(d) { return exhibitImages[d.key]; })
         .attr("width", thumbnailWidth)
@@ -129,6 +139,20 @@ function buildLineChart(divSelector, data) {
     var chartDiv = d3.select(divSelector);
     var divW = pxToNum(chartDiv.style("width"));
     var divH = pxToNum(chartDiv.style("height"));
+
+    if (data.length <= 1) {
+        chartDiv.append("svg")
+            .style("width", divW)
+            .style("height", divH)
+          .append("text")
+            .attr("text-anchor", "middle")
+            .text("No data")
+            .attr("class", "chart_label")
+            .style("font-size", "16px")
+            .attr("x", divW / 2)
+            .attr("y", divH / 2);
+        return;
+    }
 
     var margin = {top: 10, bottom: 30, right: 10, left: 60};
     var w = divW - margin.right - margin.left;
@@ -173,7 +197,7 @@ function buildLineChart(divSelector, data) {
         .attr("y", 6)
         .attr("dy", ".71em")
         .style("text-anchor", "end")
-        .text("Events");
+        .text("Seconds Viewed");
 
     svg.append("path")
         .datum(data)
@@ -208,7 +232,7 @@ function buildTrendChart(divSelector, data) {
         .domain([0, d3.max(data, function(d) { return d.totalTime; })])
         .range([0, w]);
     var yScale = d3.scale.ordinal()
-        .domain(data.map(function(d) { return d.location_id; }))
+        .domain(data.map(function(d) { return d.exhibit_id; }))
         .rangeRoundBands([0, h], .1);
     var colorScale = d3.scale.linear()
         .domain([0, d3.max(data, function(d) { return d.totalTime; })])
@@ -224,7 +248,7 @@ function buildTrendChart(divSelector, data) {
         .data(data)
         .enter()
         .append("g")
-        .attr("transform", function(d) { return "translate(0," + yScale(d.location_id) + ")" ; });
+        .attr("transform", function(d) { return "translate(0," + yScale(d.exhibit_id) + ")" ; });
 
     var rects = bars
         .append("rect")
@@ -234,9 +258,10 @@ function buildTrendChart(divSelector, data) {
         .attr("width", function(d) { return wScale(d.totalTime); })
         .attr("height", yScale.rangeBand());
 
-    var thumbnails = bars
+    var thumbnails = bars.append("a")
+        .attr("xlink:href", function(d) { return "/exhibit/" + d.exhibit_id + "#exhibit_cont"; })
         .append("image")
-        .attr("xlink:href", function(d) { return exhibitImages[d.location_id]; })
+        .attr("xlink:href", function(d) { return exhibitImages[d.exhibit_id]; })
         .attr("width", 20)
         .attr("height", yScale.rangeBand());
 }

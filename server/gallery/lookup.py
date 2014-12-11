@@ -9,7 +9,10 @@ from collections import defaultdict
 from gallery.models import Sighting, Exhibit
 
 
-def getDetectionWidths(clientId, locationIds, start, end):
+def getDetectionWidths(clientId, exhibits, start, end):
+    ''' Assumes all exhibits belong to the same exhibition. '''
+    exhibition = exhibits[0].exhibition
+    locationIds = [e.location_id for e in exhibits]
     locationDetectionWidths = Sighting.objects.raw('''
         SELECT id, location_id, wb, c FROM (
             SELECT id, ROUND((x3 - x1) / 10) AS wb, time, location_id, client_id, COUNT(*) AS c
@@ -34,21 +37,15 @@ def getDetectionWidths(clientId, locationIds, start, end):
     widthBins = range(0, max(widthBins) + 1)
     detectionWidths = defaultdict(lambda: [0] * len(widthBins))
     for ldw in locationDetectionWidths:
-        detectionWidths[ldw.location_id][int(ldw.wb)] = ldw.c
+        exhibit = Exhibit.objects.get(exhibition=exhibition, location_id=ldw.location_id)
+        detectionWidths[int(exhibit.id)][int(ldw.wb)] = ldw.c
     detectionWidths = dict(detectionWidths)
     return detectionWidths
 
 
-def getExhibitImages(exhibition, locationIds):
+def getExhibitImages(exhibits):
     ''' Get lookup from location ID to exhibit image '''
-    exhibitImages = {}
-    for l in locationIds:
-        try:
-            exhibit = Exhibit.objects.get(location_id=l, exhibition=exhibition)
-        except Exhibit.DoesNotExist:
-            continue
-        exhibitImages[l] = '/media/' + exhibit.image.name
-    return exhibitImages
+    return {int(e.id): '/media/' + e.image.name for e in exhibits}
 
 
 def getTimesPerDate(clientId, exhibition, locationIds, start, end):
