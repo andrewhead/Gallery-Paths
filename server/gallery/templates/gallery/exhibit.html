@@ -1,6 +1,11 @@
 {% extends "gallery/base.html" %}
+{% load staticfiles %}
+
 {% block head %}
-    <title>Analytics: {{ name }}</title>
+<title>Analytics: {{ name }}</title>
+    <script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
+    <script type="text/javascript" src="{% static "gallery/js/graphs.js" %}"></script>
+    <script type="text/javascript" src="{% static "gallery/js/exhibit.js" %}"></script>
     <script>window.timeByDay = {{ timeByDay|safe }};</script>
     <script>window.detectionWidths = {{ detectionWidths|safe }};</script>
 {% endblock %}
