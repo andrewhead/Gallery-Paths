@@ -188,7 +188,8 @@ function buildLineChart(divSelector, data) {
 
     var xAxis = d3.svg.axis()
         .scale(x)
-        .orient("bottom");
+        .orient("bottom")
+        .ticks(d3.time.day);
 
     var yAxis = d3.svg.axis()
         .scale(y)
