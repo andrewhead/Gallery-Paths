@@ -8,6 +8,10 @@
     <p>Put some works on display</p>
 {% endblock %}
 
+{% block links %}
+    <a href="/exhibitions">Back to My Exhibitions</a>&nbsp;&nbsp;&nbsp;
+{% endblock %}
+
 {% block content %}
 <div class="container">
     <form action="exhibits" method="POST" enctype="multipart/form-data" class="django">

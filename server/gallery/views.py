@@ -169,6 +169,7 @@ def analytics(request, xid):
         'trendTimes': serialize(exhibitTimes),
         'exhibitImages': serialize(exhibitImages),
         'detectionWidths': serialize(detectionWidths),
+        'exhibition': exhibition,
     }
     return render(request, 'gallery/analytics.html', context)
 
@@ -201,6 +202,7 @@ def exhibit(request, eid):
         'timesPerDate': serialize(timesPerDate),
         'exhibitImages': serialize(getExhibitImages([exhibit])),
         'detectionWidths': serialize(detectionWidths),
+        'exhibition': exhibition,
     }
     return render(request, 'gallery/exhibit.html', context)
 

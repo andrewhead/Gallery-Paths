@@ -37,7 +37,8 @@
                 <a href="/accounts/logout">Log Out</a>&nbsp;&nbsp;&nbsp;
             </p>
             <p class="links">
-                <a href="/exhibitions">My Exhibitions</a>&nbsp;&nbsp;&nbsp;
+                {% block links %}
+                {% endblock %}
             </p>
             <p class="hiddenright"></p>
             {% endif %}

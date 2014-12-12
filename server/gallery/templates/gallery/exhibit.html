@@ -18,6 +18,11 @@
     <p>What is trending in your gallery?</p>
 {% endblock %}
 
+{% block links %}
+    <a href="/exhibition/{{ exhibition.id }}/exhibits">Edit Exhibits</a>&nbsp;&nbsp;&nbsp;
+    <a href="/exhibition/{{ exhibition.id }}/analytics">Back to Analytics</a>&nbsp;&nbsp;&nbsp;
+{% endblock %}
+
 {% block content %}
 <div class="container">
     <div id="exhibit_cont" class="cols">

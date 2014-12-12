@@ -9,6 +9,10 @@
     <p>Prepare your gallery space</p>
 {% endblock %}
 
+{% block links %}
+    <a href="/index">Back to Home</a>&nbsp;&nbsp;&nbsp;
+{% endblock %}
+
 {% block content %}
     <header id="header">
         <h3>Open Exhibitions</h3>
@@ -19,7 +23,7 @@
                 <tr>
                     <th>Exhibition Name</th>
                     <th>Start Date</th>
-                    <th>Analytics</th>
+                    <th>Exhibits</th>
                     <th>Close</th>
                 </tr>
             </thead>
@@ -27,11 +31,11 @@
                 {% for e in exhibitions %}
                 {% if not e.end %}
                 <tr>
-                    <td>{{ e.name }}</td>
+                    <td><a href="/exhibition/{{ e.id }}/analytics/#tabs">{{ e.name }}</a></td>
                     <td>{{ e.start }}</td>
                     <td class="centered">
-                        <form action="exhibition/{{ e.id }}/analytics/#tabs" method="GET">
-                            <input class="view_btn" type="submit" value="View"></input>
+                        <form action="exhibition/{{ e.id }}/exhibits" method="GET">
+                            <input class="view_btn" type="submit" value="Edit"></input>
                         </form>
                     </td>
                     <td class="centered">
@@ -67,19 +71,19 @@
                     <th>Exhbition Name</th>
                     <th>Start Date</th>
                     <th>End Date</th>
-                    <th>Analytics</th>
+                    <th>Exhibits</th>
                 </tr>
             </thead>
             <tbody>
                 {% for e in exhibitions %}
                 {% if e.end %}
                 <tr>
-                    <td>{{ e.name }}</td>
+                    <td><a href="/exhibition/{{ e.id }}/analytics/#tabs">{{ e.name }}</a></td>
                     <td>{{ e.start }}</td>
                     <td>{{ e.end }}</td>
                     <td class="centered">
-                        <form action="exhibition/{{ e.id }}/analytics/#tabs" method="GET">
-                            <input class="view_btn" type="submit" value="View"></input>
+                        <form action="exhibition/{{ e.id }}/exhibits" method="GET">
+                            <input class="view_btn" type="submit" value="Edit"></input>
                         </form>
                     </td>
                 </tr>

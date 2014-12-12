@@ -9,7 +9,7 @@ function buildHeatmap(divSelector, data, exhibitImages) {
         return sum(a.value) - (b.value);
     });
 
-    var margin = {top: 10, bottom: 10, right: 10, left: 30};
+    var margin = {top: 10, bottom: 40, right: 10, left: 30};
     var chartDiv = d3.select(divSelector);
     var divW = pxToNum(chartDiv.style("width"));
     var divH = pxToNum(chartDiv.style("height"));
@@ -45,9 +45,14 @@ function buildHeatmap(divSelector, data, exhibitImages) {
         .domain([data[0].value.length + 1, 0])
         .range([thumbnailWidth, w]);
     var xUnitRange = Math.abs(xScale(1) - xScale(0));
+    var xAxisScale = d3.scale.log()
+        .domain([1, 8])
+        .range([thumbnailWidth, w]);
+
     var yScale = d3.scale.ordinal()
         .domain(data.map(function(d) { return d.key; }))
         .rangeRoundBands([legend.h + legend.m.top + legend.m.bottom, h], .15);
+
     var colorScale = d3.scale.log()
         .base(2)
         .domain([
@@ -125,6 +130,21 @@ function buildHeatmap(divSelector, data, exhibitImages) {
         .attr("xlink:href", function(d) { return exhibitImages[d.key]; })
         .attr("width", thumbnailWidth)
         .attr("height", yScale.rangeBand());
+
+    var xAxis = d3.svg.axis()
+        .scale(xAxisScale)
+        .tickFormat(d3.format("1d ft."))
+        .orient("bottom");
+    svg.append("g")
+        .attr("transform", "translate(" + (margin.left + 7) + "," + h + ")")
+        .attr("class", "axis")
+        .call(xAxis)
+      .append("text")
+        .attr("x", margin.left + 7)
+        .attr("y", 25)
+        .attr("dy", ".71em")
+        .style("text-anchor", "start")
+        .text("Distance (ft)");
 }
 
 function buildLineChart(divSelector, data) {
