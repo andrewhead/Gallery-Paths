@@ -135,7 +135,7 @@ def analytics(request, xid):
 
     ''' Get events per exhibit at day, week, and month level. '''
     clientSightings = baseSightings.filter(
-        time__lte=end + datetime.timedelta(days=1)
+        upload_time__lte=end + datetime.timedelta(days=1)
     )
     exhibitTimes = {}
     locationIds = set()
@@ -146,7 +146,7 @@ def analytics(request, xid):
     }
     for tg in timeGroups.keys():
         times = list(clientSightings
-            .filter(time__gte=timeGroups[tg])
+            .filter(upload_time__gte=timeGroups[tg])
             .values('location_id')
             .annotate(totalTime=Count('location_id'))
             .order_by('-totalTime'))
