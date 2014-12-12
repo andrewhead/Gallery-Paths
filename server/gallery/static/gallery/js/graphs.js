@@ -158,6 +158,7 @@ function buildLineChart(divSelector, data) {
 
     /* Make fake data */
     var fakeData = [];
+    /*
     edgeDates = d3.extent(data.map(function(d) { return d.date; }));
     edgeDates[0] = new Date(2014, 12, 1);
     edgeDates[1] = new Date(2014, 12, 9);
@@ -171,6 +172,7 @@ function buildLineChart(divSelector, data) {
         d.setDate(d.getDate() + 1);
     }
     data = fakeData;
+    */
 
     var chartDiv = d3.select(divSelector);
     var divW = pxToNum(chartDiv.style("width"));

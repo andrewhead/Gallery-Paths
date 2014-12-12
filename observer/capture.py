@@ -27,8 +27,8 @@ logging.basicConfig(
 )
 
 ''' Configurations. '''
-LIGHTS_ENABLED = False
-DETECTION_MODE = 'qr'
+LIGHTS_ENABLED = True
+DETECTION_MODE = 'face'
 API_URL = "http://gallerypaths.com/api/sighting/"
 
 
@@ -179,4 +179,4 @@ if __name__ == '__main__':
     logging.info("Client ID %s, Location ID %s", clientId, locationId)
     enablePin(17)
     enablePin(27)
-    takePics(DETECTION_MODE, args.r, clientId, locationId)
+    takePics(DETECTION_MODE, 0, clientId, locationId)
