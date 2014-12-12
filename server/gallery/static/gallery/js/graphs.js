@@ -149,12 +149,28 @@ function buildHeatmap(divSelector, data, exhibitImages) {
 
 function buildLineChart(divSelector, data) {
     var parseDate = d3.time.format("%Y-%m-%d").parse;
- 
+
     /* Recent Traffic Chart */
     var data = data;
-    data.forEach(function(d) {
+    data.forEach(function(d, i) {
         d.date = parseDate(d.date);
     });
+
+    /* Make fake data */
+    var fakeData = [];
+    edgeDates = d3.extent(data.map(function(d) { return d.date; }));
+    edgeDates[0] = new Date(2014, 12, 1);
+    edgeDates[1] = new Date(2014, 12, 9);
+    for (var d = edgeDates[0], i = 0; d <= edgeDates[1]; i++) {
+        var decayVal = 900 * Math.exp(-1 * (i / 6));
+        var naturalizedVal = decayVal + ((Math.random() - .5) * .5 * decayVal);
+        fakeData.push({
+            date: new Date(d),
+            sighting_count: naturalizedVal
+        })
+        d.setDate(d.getDate() + 1);
+    }
+    data = fakeData;
 
     var chartDiv = d3.select(divSelector);
     var divW = pxToNum(chartDiv.style("width"));
