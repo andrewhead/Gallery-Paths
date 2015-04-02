@@ -1,4 +1,5 @@
 domain: gallerypaths.com
+awsbucket: gallerypaths
 localport: 8000
 projectdir: /usr/local/gallery
 wwwdir: "/var/www/gallerypaths.com"

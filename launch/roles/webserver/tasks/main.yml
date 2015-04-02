@@ -25,7 +25,7 @@
   file: state=directory path={{ mediadir }} owner=ubuntu
   sudo: true
 
-- name: Create updates director
+- name: Create updates directory
   file: state=directory path={{ updatesdir }} owner=ubuntu
   sudo: true
 
@@ -40,6 +40,10 @@
   pip: name=virtualenv
   sudo: true
 
+- name: Install AWS command line tools
+  pip: name=awscli
+  sudo: true
+
 - name: Install server Python dependencies
   pip: name={{ item }} virtualenv="{{ venv }}"
   with_items:
@@ -50,6 +54,18 @@
   - django-registration-redux
   - jsonpickle
   - Pillow
+
+- name: Create nginx SSL directory
+  file: state=directory path=/etc/nginx/ssl owner=root
+  sudo: true
+
+- name: Fetch SSL certificate
+  s3: bucket={{ awsbucket }} object=nginx.crt dest=/etc/nginx/ssl/{{ appname }}.crt mode=get
+  sudo: true
+
+- name: Fetch SSL key
+  s3: bucket={{ awsbucket }} object=nginx.key dest=/etc/nginx/ssl/{{ appname }}.key mode=get
+  sudo: true
 
 - name: Configure nginx sites
   template: src=nginx-site.j2 dest=/etc/nginx/sites-enabled/{{ appname }}
@@ -64,7 +80,7 @@
   sudo: true
 
 - name: Configure MySQL
-  s3: bucket=gallerypaths object=my.cnf dest=/etc/my.cnf mode=get
+  s3: bucket={{ awsbucket }} object=my.cnf dest=/etc/my.cnf mode=get
   sudo: true
 
 - name: Start MySQL service
@@ -91,6 +107,10 @@
   template: src=supervisor.j2 dest=/etc/supervisor/conf.d/{{ appname }}.conf
   sudo: true
 
+- name: Create PID file
+  file: state=touch path=/tmp/gunicorn-{{ appname }}.pid owner=ubuntu
+  sudo: true
+
 - name: Start server application
   supervisorctl: name={{ appname }} state={{ item }}
   with_items:
@@ -103,7 +123,7 @@
   sudo: true
 
 - name: Add to auto-boot process
-  command: rc-update.d update defaults chdir=/etc/init.d
+  command: update-rc.d update defaults chdir=/etc/init.d
   sudo: true
 
 - name: Restart nginx
