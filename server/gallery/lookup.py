@@ -14,10 +14,10 @@ def getDetectionWidths(clientId, exhibits, start, end):
     exhibition = exhibits[0].exhibition
     locationIds = [e.location_id for e in exhibits]
     locationDetectionWidths = Sighting.objects.raw('''
-        SELECT id, location_id, wb, c FROM (
+        SELECT id, wb, upload_time, location_id, client_id, c FROM (
             SELECT id, ROUND((x3 - x1) / 10) AS wb, upload_time, location_id, client_id, COUNT(*) AS c
             FROM gallery_sighting
-            GROUP BY location_id, wb
+            GROUP BY client_id, location_id, wb
             ORDER BY wb ASC
         ) AS temp 
         WHERE wb >= 0 AND 
