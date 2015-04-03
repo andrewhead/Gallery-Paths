@@ -13,6 +13,8 @@ def getDetectionWidths(clientId, exhibits, start, end):
     ''' Assumes all exhibits belong to the same exhibition. '''
     exhibition = exhibits[0].exhibition
     locationIds = [e.location_id for e in exhibits]
+    # Note: in the future, this should consider the upload time.  We don't know
+    # how to handle it right now because of the time zone so we're skipping it currently.
     locationDetectionWidths = Sighting.objects.raw('''
         SELECT id, wb, upload_time, location_id, client_id, c FROM (
             SELECT id, ROUND((x3 - x1) / 10) AS wb, upload_time, location_id, client_id, COUNT(*) AS c
@@ -21,13 +23,9 @@ def getDetectionWidths(clientId, exhibits, start, end):
             ORDER BY wb ASC
         ) AS temp 
         WHERE wb >= 0 AND 
-            upload_time >= '{start}' AND 
-            upload_time <= '{end}' AND 
             client_id = {clientId} AND 
             location_id IN ({locationList});
     '''.format(
-        start=start.strftime("%Y%m%d"),
-        end=end.strftime("%Y%m%d"),
         clientId=clientId,
         locationList=','.join([str(l) for l in locationIds])
     ))
