@@ -16,6 +16,7 @@ import picamera
 import picamera.array
 import cv2
 import zbar
+from detect import FaceRecognizer
 
 
 ''' Logging. '''
@@ -29,20 +30,20 @@ logging.basicConfig(
 ''' Configurations. '''
 LIGHTS_ENABLED = True
 DETECTION_MODE = 'face'
-API_URL = "http://gallerypaths.com/api/sighting/"
+API_URL = "https://gallerypaths.com/api/sighting/"
 
 
-def camLight(mode):
+def cam_light(mode):
     ''' Toggle camera LED. '''
     led(27, mode)
 
 
-def detectionLight(mode):
+def detection_light(mode):
     ''' Toggle detection LED. '''
     led(17, mode)
 
 
-def enablePin(index):
+def enable_pin(index):
     subprocess.call(['gpio', '-g', 'mode', str(index), 'out'])
 
 
@@ -55,10 +56,13 @@ def led(index, mode):
     subprocess.call(['gpio', '-g', 'write', str(index), str(value)])
 
 
-def takePics(cls, rotation, clientId, locationId):
+""" MAIN PROCEDURES. """
+
+def takePics(cls, rotation, client_id, location_id):
     ''' Main program loop, takes pictures, processes, and uploads to server. '''
 
-    netExecutor = ThreadPoolExecutor(max_workers = 3)
+    net_executor = ThreadPoolExecutor(max_workers = 3)
+    recognizer = FaceRecognizer(decay=30)
 
     with picamera.PiCamera() as camera:
         time.sleep(2)
@@ -66,77 +70,49 @@ def takePics(cls, rotation, clientId, locationId):
         with picamera.array.PiRGBArray(camera) as stream:
 
             camera.rotation = rotation
-            if cls == 'qr':
-                camera.resolution = (1600, 900)
-                camera.contrast = 50
-                camera.brightness = 70
-                stream = picamera.array.PiYUVArray(camera)
-                format = 'yuv'
-            elif cls == 'face':
-                camera.resolution = (640, 480)
-                face_cascade = cv2.CascadeClassifier('lbpcascade_frontalface.xml')
-                stream = picamera.array.PiRGBArray(camera)
-                format = 'bgr'
+            camera.resolution = (640, 480)
+            stream = picamera.array.PiRGBArray(camera)
+            format = 'bgr'
 
             ''' Main loop. '''
-            startTime = time.time()
+            start_time = time.time()
             for frame in camera.capture_continuous(stream, format=format, use_video_port=True):
 
-                logging.info("New frame")           
+                logging.info("New frame")
                 dt = datetime.datetime.utcnow()
-                camLight('off')
+                cam_light('off')
 
                 ''' Clear stream. '''
                 stream.truncate()
                 stream.seek(0)
 
-                ''' Perform QR recognition. '''
-                if cls == 'qr':
-                    scanner = zbar.ImageScanner()
-                    scanner.parse_config('enable')
-                    zImg = zbar.Image(1600, 900, 'Y800', stream.getvalue())
-                    scanner.scan(zImg)
-
-                    hasSymbols = False
-                    for symbol in zImg:
-                        tl, bl, br, _ = [l for l in symbol.location]
-                        logging.info("Found QR (%s) at %s, %s, %s", symbol.data, str(tl), str(bl), str(br))
-                        netExecutor.submit(upload, dt, clientId, locationId, symbol.data, tl, bl, br)
-                        hasSymbols = True
-
-                    if hasSymbols:
-                        detectionLight('on')
-                    else:
-                        detectionLight('off')
-
                 ''' Perform face recognition. '''
-                if cls == 'face':
-                    image = stream.array
-                    grey = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-                    faces = face_cascade.detectMultiScale(grey, 1.3, 5)
+                image = stream.array
+                faces = recognizer.find_faces(image)
 
-                    hasFaces = False
-                    for (x, y, w, h) in faces:
-                        tl = (x, y)
-                        bl = (x, y + h)
-                        br = (x + w, y + h)
-                        logging.info("Found face at %s, %s, %s", str(tl), str(bl), str(br))
-                        netExecutor.submit(upload, dt, clientId, locationId, '1024', tl, bl, br)
-                        hasFaces = True
+                ''' Report faces to server. '''
+                hasFaces = False
+                for (x, y, w, h, vi) in faces:
+                    tl = (x, y)
+                    bl = (x, y + h)
+                    br = (x + w, y + h)
+                    logging.info("Found face %s at %s, %s, %s", str(vi), str(tl), str(bl), str(br))
+                    net_executor.submit(upload, dt, client_id, location_id, vi, tl, bl, br)
+                    hasFaces = True
 
-                    if hasFaces:
-                        detectionLight('on')
-                    else:
-                        detectionLight('off')
+                if hasFaces:
+                    detection_light('on')
+                else:
+                    detection_light('off')
 
-                startTime = time.time()
-                camLight('on')
+                start_time = time.time()
+                cam_light('on')
 
 
 def upload(dt, cId, lId, vId, tl, bl, br):
     ''' Upload detection event to server. '''
     try:
-        visitorId = int(vId)
+        visitor_id = int(vId)
     except:
         logging.warning("Skipping invalid visitor ID: %s", str(vId))
         return
@@ -155,16 +131,16 @@ def upload(dt, cId, lId, vId, tl, bl, br):
     }
     try:
         requests.post(API_URL, data=json.dumps(detection), 
-            headers={'Content-Type': 'application/json'})
+            headers={'Content-Type': 'application/json'}, verify=False)
         logging.info("Uploaded detection %s", json.dumps(detection))
     except:
         logging.warning("Could not upload request: %s",  json.dumps(detection))
 
 
-def readConfig(configFilename):
+def readConfig(config_filename):
     ''' Read observer configuration from file. '''
     config = ConfigParser.ConfigParser()
-    config.readfp(open(configFilename))
+    config.readfp(open(config_filename))
     return config.get('observer', 'client_id'), config.get('observer', 'location_id')
 
 
@@ -174,9 +150,9 @@ if __name__ == '__main__':
     parser.add_argument("-r", help="rotation", default=0)
     args = parser.parse_args()
 
-    clientId, locationId = readConfig('/etc/observer.conf')
+    client_id, location_id = readConfig('/etc/observer.conf')
     logging.info("")
-    logging.info("Client ID %s, Location ID %s", clientId, locationId)
-    enablePin(17)
-    enablePin(27)
-    takePics(DETECTION_MODE, 0, clientId, locationId)
+    logging.info("Client ID %s, Location ID %s", client_id, location_id)
+    enable_pin(17)
+    enable_pin(27)
+    takePics(DETECTION_MODE, 0, client_id, location_id)
