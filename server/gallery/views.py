@@ -207,6 +207,7 @@ def exhibit(request, eid):
     return render(request, 'gallery/exhibit.html', context)
 
 
+@login_required
 def events(request):
 
     def flatten(d):
