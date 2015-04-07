@@ -1,0 +1,56 @@
+/* Get counts for sightings at certain locations */
+SELECT id, upload_time, xoff, w, c FROM (
+	SELECT id, upload_time, ROUND(x1 / 20) * 20 AS xoff, ROUND((x3 - x1) / 20) * 20 AS w, COUNT(*) AS c 
+	FROM gallery_sighting 
+	WHERE 
+		location_id = 2 AND 
+		client_id = 7 AND
+		upload_time >= "2015-04-05 16:00:00"
+	GROUP BY xoff, w
+	ORDER BY xoff ASC, w ASC
+) AS temp
+;
+
+/* Get all legitimate sightings in order */
+/* There's still noise in here, so we have to use our best judgment */
+/* We filter out any heads larger than 80 as we figure those can't be right given the width of the camera field as 640 */
+SELECT upload_time, visitor_id, xoff, w FROM (
+	SELECT upload_time, visitor_id, ROUND(x1 / 20) * 20 AS xoff, ROUND((x3 - x1) / 20) * 20 AS w 
+	FROM gallery_sighting 
+	WHERE 
+		location_id = 2 AND 
+		client_id = 7 AND
+		upload_time >= "2015-04-05 16:00:00"
+	ORDER BY upload_time ASC
+) AS temp
+WHERE 	
+	w <= 80 AND 
+	(
+	(xoff != 200 AND w != 260) OR
+	(xoff != 200 AND w != 280) OR
+	(xoff != 200 AND w != 300) OR
+	(xoff != 220 AND w != 220) OR
+	(xoff != 220 AND w != 240) OR
+	(xoff != 220 AND w != 260) OR
+	(xoff != 220 AND w != 280) OR
+	(xoff != 240 AND w != 180) OR
+	(xoff != 240 AND w != 200) OR
+	(xoff != 240 AND w != 220) OR
+	(xoff != 240 AND w != 240) OR
+	(xoff != 260 AND w != 160) OR
+	(xoff != 260 AND w != 180) OR
+	(xoff != 260 AND w != 200) OR
+	(xoff != 280 AND w != 120) OR
+	(xoff != 280 AND w != 140) OR
+	(xoff != 280 AND w != 160) OR
+	(xoff != 300 AND w != 60) OR
+	(xoff != 300 AND w != 80) OR
+	(xoff != 300 AND w != 100) OR
+	(xoff != 300 AND w != 120) OR
+	(xoff != 320 AND w != 60) OR
+	(xoff != 320 AND w != 80) OR
+	(xoff != 320 AND w != 100) OR
+	(xoff != 560 AND w != 60) OR
+	(xoff != 560 AND w != 80)
+	)
+;
